@@ -35,6 +35,72 @@ namespace Garant1._0
         {
             InitializeComponent();
 
+            //code_err_water = new Dictionary<int, string>
+            //{
+            //    {71, "Не устанавливается" },
+            //    {70, "Счётчик воды в сборе!" },
+            //    {72, "Нарушена плома" },
+            //    {74, "Предположительно обратная установка" },
+            //    {80, "Паспорт!" },
+            //    {82, "Не совпадает номер прибора с номером в паспорте" },
+            //    {20, "Проливная часть в сборе!" },
+            //    {21, "Крыльчатка не вращается" },
+            //    {22, "Крыльчатка резко останавливается" },
+            //    {23, "Всё вращается" },
+            //    {25, "Отсутствует люфт без прокладки" },
+            //    {26, "Другое" },
+            //    {60, "Нарушение условий эксплуатации" },
+            //    {62, "Превышение давления" },
+            //    {63, "Механическое включение в камере" },
+            //    {64, "Крыльчатка оплавлена" },
+            //    {65, "Другое" },
+            //    {66, "Известковый налет на всей поверхности камеры" },
+            //    {30, "Корпус!" },
+            //    {31, "Неперпендикулярная ось" },
+            //    {32, "Налёт на оси" },
+            //    {331, "Износ оси" },
+            //    {34, "Занижена ось корпуса" },
+            //    {35, "Завышена ось корпуса" },
+            //    {37, "Течь корпуса (дефект литья)" },
+            //    {38, "Течь из-под кольца" },
+            //    {381, "Несоответствие диаметра (корпус)" },
+            //    {382, "Несоответствие диаметра (крышка)" },
+            //    {383, "Несоответствие размера 1,8" },
+            //    {384, "Несоответствие размера 4,4" },
+            //    {385, "Повреждение уплотнительного кольца" },
+            //    {386, "Другое" },
+            //    {39, "Несоответствующая резьба" },
+            //    {11, "Некачественная сборка!" },
+            //    {111, "Колёса другого типа" },
+            //    {113, "Разгерметизация" },
+            //    {114, "Повреждение деталей при сборке" },
+            //    {12, "Интегратор!" },
+            //    {121, "Не соответствует количество чёрных и красных барабанчиков" },
+            //    {122, "Большой люфт" },
+            //    {123, "Установка 1-4 разряда интегратора не на 0" },
+            //    {13, "Стопорение!" },
+            //    {131, "Мусор внутри СМ" },
+            //    {132, "Некачественные барабанчики" },
+            //    {133, "Некачественные колёса" },
+            //    {134, "Другое" },
+            //    {136, "Невозможно определить причину" },
+            //    {137, "Сломана цапфа муфты" },
+            //    {50, "Крыльчатка!" },
+            //    {51, "Налипание на оси" },
+            //    {52, "Налипание на магнитах" },
+            //    {54, "Вылетел кольцевой магнит из крыльчатки" },
+            //    {55, "Коррозия кольцевых магнитов" },
+            //    {56, "Отсутствует магнит" },
+            //    {40, "Крышка" },
+            //    {42, "Занижен ⌀ 1,5 втулки" },
+            //    {43, "Занижен наружный диаметр крышки" },
+            //    {44, "Не запрессован подпишник" },
+            //    {24, "Магниты в СМ и ПЧ разные" },
+            //    {241, "Счётчик антимагнитный (СМ-2, ПЧ-6)" },
+            //    {242, "Счётчик простой (СМ-2, ПЧ-6)" },
+            //    {243, "Счётчик антимагнитный (СМ-6, ПЧ-2)" },
+            //    {244, "Счётчик простой (СМ-6, ПЧ-2)" },
+            //};
             code_err_water = new string[]
             {
                 "70 - Счетчик воды в сборе!",
@@ -102,9 +168,7 @@ namespace Garant1._0
                 "244 - Счетчик простой (СМ-6, ПЧ-2)"
             };
 
-
             //Form Menu = new Form();
-
 
             //MessageBox.Show(Application.StartupPath);
             StartPath = Application.StartupPath + "\\";
@@ -1036,7 +1100,7 @@ namespace Garant1._0
                     {
                         query += " OR ";
                     }
-                    have_meter = true; 
+                    have_meter = true;
                     query += "TypeMeter = '" + checkedListBox1.Items[i] + "'";
                     text_data += checkedListBox1.Items[i] + " ";
                 }
@@ -1116,11 +1180,30 @@ namespace Garant1._0
             query += ")";
 
 
-            //MessageBox.Show(query);
+            richTextBox1.Text = query;
 
             string[] rimsk = new string[] { "0", "I", "II", "III", "IV" };
 
             MySqlDataReader data = ExecutQuery_Select(query);
+            //var dataList = new List<string>();
+
+            //if (data != null)
+            //{
+            //    MessageBox.Show("Not empty query");
+            //    while (data.Read())
+            //    {
+            //        for (int index = 0; index < data.FieldCount; index++)
+            //        {
+            //            dataList.Add(data[index].ToString());
+            //        }
+            //    }
+            //    data.Close();
+            //}
+
+            //var jsonData = JsonConvert.SerializeObject(dataList);
+            //MessageBox.Show(jsonData);
+
+
             if (data != null)
             {
                 Excel.Application ex = new Microsoft.Office.Interop.Excel.Application();
@@ -1150,6 +1233,9 @@ namespace Garant1._0
                         sheet.Cells[2, 5] = "ПРИНЯТЫЕ НА ГАРАНТИЙНЫЙ РЕМОНТ. ПРОЦЕНТ ОТ ВЫПУСКА";
                         sheet.Cells[2, 6] = "НЕ ПРИНЯТЫЕ НА ГАРАНТИЙНЫЙ РЕМОНТ. ПРОЦЕНТ ОТ ВЫПУСКА";
                         sheet.Cells[2, 7] = "ВСЕГО ВЫПУЩЕНО";
+
+                        sheet.Columns.AutoFit();
+                        sheet.Columns["A:A"].ColumnWidth = 14;
 
                         while (year <= Convert.ToInt32(cb_kv_year_end.Text))
                         {
@@ -1189,12 +1275,12 @@ namespace Garant1._0
                             range.Formula = string.Format("=C" + new_row + "/G" + new_row);
                             range = sheet.Cells[new_row, 6] as Excel.Range;
                             range.Formula = string.Format("=D" + new_row + "/G" + new_row);
-
-
-
+                            range = sheet.Cells[new_row, 7] as Excel.Range;
+                            range.Formula = string.Format("=B" + new_row);
 
                             range = sheet.Cells[new_row, 1] as Excel.Range;
                             string data_row = range.Value2;
+
                             if (data_row.IndexOf("Всего за") != -1)
                             {
                                 range = sheet.Cells[new_row, 2] as Excel.Range;
@@ -1224,19 +1310,14 @@ namespace Garant1._0
                         {
                             DateTime dt = DateTime.Parse(data["DatePriem"].ToString());
 
-                            if (dt.Month < 4)
-                                kv = 1;
-                            else if (dt.Month < 7)
-                                kv = 2;
-                            else if (dt.Month < 10)
-                                kv = 3;
-                            else
-                                kv = 4;
+                            kv = dt.Month < 4 ? 1 : dt.Month < 7 ? 2 : dt.Month < 10 ? 3 : 4;
+
                             for (int new_row = 3; new_row <= row; new_row++)
                             {
                                 range = sheet.Cells[new_row, 1] as Excel.Range;
                                 string data_row = range.Value2;
-                                if (data_row.IndexOf(dt.Year.ToString()) != -1 && data_row.IndexOf(rimsk[kv]) != 1)
+
+                                if (new_row != row && data_row.IndexOf(dt.Year.ToString()) != -1 && data_row.IndexOf(rimsk[kv]) != -1)
                                 {
                                     int stolb = (data["Solution"].ToString().Trim() == "Гарантийный ремонт") ? 3 : 4;
 
@@ -1251,11 +1332,17 @@ namespace Garant1._0
                     }
                     else
                     {
-
+                        // создание шаблона по произвольной выборке даты
                     }
                 }
                 else
                 {
+                    /*
+                     * Данный шаблон учитывает в расчётах неуникальные записи,
+                     * то есть один счётчик может числиться сразу в ряде строк,
+                     * поскольку каждый счётчик может иметь более одного кода ошибки/возврата.
+                     */
+
                     if (checkBox2.Checked == true)
                     {
                         int years = Convert.ToInt32(cb_kv_year_end.Text) - Convert.ToInt32(cb_kv_year_start.Text);
@@ -1294,11 +1381,15 @@ namespace Garant1._0
                                 sheet.Cells[4, 3 + i - start_year + 2] = "III кв.";
                                 sheet.Cells[4, 3 + i - start_year + 3] = "IV кв.";
                                 sheet.Cells[4, 3 + i - start_year + 4] = "Всего";
+
+                                sheet.Cells[4, 3 + i - start_year + 4].Interior.Color =  Color.Gray;
+                                sheet.Cells[4, 3 + i - start_year + 4].Font.Bold = true;
+                                sheet.Cells[4, 3 + i - start_year + 4].Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+                                sheet.Cells[4, 3 + i - start_year + 4].Borders.Color = ColorTranslator.ToOle(Color.Black);
+
                                 last_column = 3 + i - start_year + 4;
                             }
                         }
-
-
 
                         for (row = 5; row < error_index + 5; row++)
                         {
@@ -1308,44 +1399,59 @@ namespace Garant1._0
                             for (int col = 3; col <= last_column; col++)
                             {
                                 sheet.Cells[row, col] = 0;
-                            }
+
+                                if (col == last_column)
+                                {
+                                    range = sheet.Cells[row, 11] as Excel.Range;
+                                    range.Formula = string.Format("=SUM(C" + row + ":J" + (row - 1));
+
+                                    sheet.Cells[row, col].Interior.Color = Color.Gray;
+                                    sheet.Cells[row, col].Font.Bold = true;
+                                    sheet.Cells[row, col].Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+                                    sheet.Cells[row, col].Borders.Color = ColorTranslator.ToOle(Color.Black);
+                                }
+                                }
                         }
                         range = sheet.Cells[1, 2] as Excel.Range;
                         range.EntireColumn.AutoFit();
 
+                        while (data.Read()) {
 
-                        while (data.Read())
-                        {
                             DateTime dt = DateTime.Parse(data["DatePriem"].ToString());
 
-                            if (dt.Month < 4)
-                                kv = 1;
-                            else if (dt.Month < 7)
-                                kv = 2;
-                            else if (dt.Month < 10)
-                                kv = 3;
-                            else
-                                kv = 4;
-                            for (int new_row = 3; new_row <= row; new_row++)
-                            {
-                                range = sheet.Cells[new_row, 1] as Excel.Range;
-                                string data_row = range.Value2;
-                                if (data_row.IndexOf(dt.Year.ToString()) != -1 && data_row.IndexOf(rimsk[kv]) != 1)
-                                {
-                                    int stolb = (data["Solution"].ToString().Trim() == "Гарантийный ремонт") ? 3 : 4;
+                            kv = dt.Month < 4 ? 1 : dt.Month < 7 ? 2 : dt.Month < 10 ? 3 : 4;
 
-                                    range = sheet.Cells[new_row, stolb] as Excel.Range;
-                                    double a = range.Value2;
-                                    a += 1;
-                                    sheet.Cells[new_row, stolb] = a;
+                            for (int new_row = 5; new_row <= row; new_row++) {
+
+                                range = sheet.Cells[new_row, 2] as Excel.Range;
+                                string dataCodeB = Convert.ToString(range.Value2);
+
+                                //var dataCodeB = (sheet.Cells[new_row, 2] as Excel.Range)?.Value2?.ToString() ?? "";
+
+                                if (new_row != row && data["Codeb"].ToString().IndexOf(dataCodeB) != -1) {
+
+                                    for (int index = 0, column = 3; start_year <= end_year; start_year++, index++) {
+
+                                        if (dt.Year == start_year) {
+
+                                            column += index;
+
+                                            if (dt.Year == end_year) column = dt.Month < 4 ? 7: dt.Month < 7 ? 8 : dt.Month < 10 ? 9 : 10;
+
+                                            range = sheet.Cells[new_row, column] as Excel.Range;
+                                            double a = range.Value2;
+                                            a += 1;
+                                            sheet.Cells[new_row, column] = a;
+
+                                            break;
+                                        }
+                                    }
                                     break;
                                 }
                             }
                         }
                     }
-                    else
-                    {
-                    }
+                    else { }
                 }
             }
             comm.Connection.Close();

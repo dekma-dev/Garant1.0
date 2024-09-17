@@ -7,14 +7,14 @@
     <framework targetVersion="4.6" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="Garant1.0.exe.manifest" size="15963">
+    <dependentAssembly dependencyType="install" codebase="Garant1.0.exe.manifest" size="15781">
       <assemblyIdentity name="Garant1.0.exe" version="1.0.0.1" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>bQarpCBAbe6pOmhise1U3gM00z7zsfL09n9kYN1z6hc=</dsig:DigestValue>
+        <dsig:DigestValue>XaK/mbl2kZnpPVfYYlVcXUHfWXtj4UJ3twt4z/3SdrY=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
