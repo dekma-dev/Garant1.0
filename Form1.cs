@@ -1423,10 +1423,7 @@ namespace Garant1._0
 
                             for (int new_row = 5; new_row <= row; new_row++) {
 
-                                range = sheet.Cells[new_row, 2] as Excel.Range;
-                                string dataCodeB = Convert.ToString(range.Value2);
-
-                                //var dataCodeB = (sheet.Cells[new_row, 2] as Excel.Range)?.Value2?.ToString() ?? "";
+                                var dataCodeB = (sheet.Cells[new_row, 2] as Excel.Range)?.Value2?.ToString() ?? "";
 
                                 if (new_row != row && data["Codeb"].ToString().IndexOf(dataCodeB) != -1) {
 
