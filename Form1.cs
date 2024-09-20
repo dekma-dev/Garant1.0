@@ -185,7 +185,7 @@ namespace Garant1._0
             {
                 MessageBox.Show(ex.Message);
             }
-
+            
             SetSQLMode();
             Find_users();
             //tabControl1.Enabled = false;
@@ -1073,18 +1073,6 @@ namespace Garant1._0
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //Show_Act(1);
-
-            /*meter meter1 = new meter() { Descr = "Лалка" };
-            string json = JsonSerializer.Serialize<meter>(meter1);
-
-            //act act1 = new act { num = 1, schts = json };
-            //json = JsonSerializer.Serialize<meter[]>(meters);
-            MessageBox.Show(json);
-            meter met2 = JsonSerializer.Deserialize<meter>(json);
-            //meter[] m2 = JsonSerializer.Deserialize<meter[]>();
-            MessageBox.Show(met2.Descr);*/
-
             string query = "SELECT * FROM inwork WHERE (";
             string text_data = "Отчет по \"";
             bool have_meter = false;
