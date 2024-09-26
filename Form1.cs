@@ -1440,7 +1440,6 @@ namespace Garant1._0
                 }
             }
             comm.Connection.Close();
-
         }
 
         private void dataGridView2_RowEnter_1(object sender, DataGridViewCellEventArgs e)
@@ -1461,27 +1460,24 @@ namespace Garant1._0
 
             //meter[] meters_;
 
-
             customer cust = null;
             string customerid = "";
 
-            if (max_id != null)
-            {
-                while (max_id.Read())
-                {
-                    if (max_id["Max_ID"].ToString().Trim() != "")
-                    {
+            if (max_id != null) {
+                while (max_id.Read()) {
+                    if (max_id["Max_ID"].ToString().Trim() != "") {
                         act_ID = Convert.ToInt32(max_id["Max_ID"].ToString());
                     }
                 }
             }
             act_ID++;
             comm.Connection.Close();
+
             MySqlDataReader find_date = ExecutQuery_Select("SELECT * FROM inwork WHERE IDParty='" + act_IDParty + "' ORDER BY DatePriem DESC");
-            if (find_date != null)
-            {
-                while (find_date.Read())
-                {
+
+            if (find_date != null) {
+                while (find_date.Read()) {
+
                     act_Date = find_date["DatePriem"].ToString();
                     act_sposob_dost = find_date["sposob_dost"].ToString();
                     act_num_dost = find_date["num_dost"].ToString();
@@ -1490,14 +1486,14 @@ namespace Garant1._0
                     break;
                 }
             }
+
             comm.Connection.Close();
 
-
             MySqlDataReader find_customer = ExecutQuery_Select("SELECT * FROM customers WHERE Descr = '" + customerid + "'");
-            if (find_customer != null)
-            {
-                while (find_customer.Read())
-                {
+
+            if (find_customer != null) {
+                while (find_customer.Read()) {
+
                     cust = new customer
                     {
                         ID = find_customer["ID"].ToString(),
@@ -1515,7 +1511,9 @@ namespace Garant1._0
                     break;
                 }
             }
+
             comm.Connection.Close();
+
             //act_customer = JsonSerializer.Serialize<customer>(cust);
             act_customer = "{" +
                 "\"ID\":" + "\"" + cust.ID + "\"," +
@@ -1531,8 +1529,6 @@ namespace Garant1._0
                 "\"Num_f\":" + "\"" + cust.Num_f + "\"" +
                 "}";
 
-
-
             List<string> reasons = new List<string>();
             List<string> like_types_meters = new List<string>();
             like_types_meters.Add("(TypeMeter LIKE '%СХВ%' OR TypeMeter LIKE '%СГВ%')");
@@ -1543,21 +1539,20 @@ namespace Garant1._0
             like_types_meters.Add("(TypeMeter LIKE '%ПВМ%')");
             like_types_meters.Add("(TypeMeter LIKE '%РД%')");
 
-
             MySqlDataReader find_reasons = ExecutQuery_Select("SELECT * FROM reasonreturn");
-            if (find_reasons != null)
-            {
-                while (find_reasons.Read())
-                {
+
+            if (find_reasons != null) {
+                while (find_reasons.Read()) {
                     reasons.Add(find_reasons["Reason"].ToString().Trim());
                 }
             }
+
             comm.Connection.Close();
             List<meter> meters = new List<meter>();
-            foreach (string type_meter in like_types_meters)
-            {
-                foreach (string reason in reasons)
-                {
+
+            foreach (string type_meter in like_types_meters) {
+                foreach (string reason in reasons) {
+
                     string type_prib = type_meter;
 
                     if (type_prib.IndexOf("СХВ") != -1 || type_prib.IndexOf("СГВ") != -1) type_prib = "СХВ/СГВ";
@@ -1567,13 +1562,13 @@ namespace Garant1._0
                     else if (type_prib.IndexOf("СТК") != -1) type_prib = "СТК";
                     else if (type_prib.IndexOf("ПВМ") != -1) type_prib = "ПВМ";
                     else type_prib = "РД";
-                    meters.Clear();
-                    MySqlDataReader find_meter = ExecutQuery_Select("SELECT * FROM inwork WHERE IDParty='" + act_IDParty + "' AND " + type_meter + " AND Solution = '" + reason + "'");
-                    if (find_meter != null)
-                    {
-                        while (find_meter.Read())
-                        {
 
+                    meters.Clear();
+
+                    MySqlDataReader find_meter = ExecutQuery_Select("SELECT * FROM inwork WHERE IDParty='" + act_IDParty + "' AND " + type_meter + " AND Solution = '" + reason + "'");
+
+                    if (find_meter != null) {
+                        while (find_meter.Read()) {
                             meters.Add(new meter()
                             {
                                 IDParty = act_IDParty,
@@ -1597,7 +1592,9 @@ namespace Garant1._0
                             //MessageBox.Show(find_meter["ID"] + " " + find_meter["IDParty"] + " " + find_meter["TypeMeter"] + " " + find_meter["Solution"] + " ");
                         }
                         comm.Connection.Close();
+
                         if (meters.Count < 1) continue;
+
                         string data_meter_json = "[";
                         for (int i = 0; i < meters.Count; i++)
                         {
@@ -1689,14 +1686,16 @@ namespace Garant1._0
         {
             List<int> id_acts_int = new List<int>();
             MySqlDataReader id_acts = ExecutQuery_Select("SELECT * FROM acts WHERE IDParty = '" + IDParty + "'");
-            if (id_acts != null)
-            {
+
+            if (id_acts != null) {
                 while (id_acts.Read())
                 {
                     id_acts_int.Add(Convert.ToInt32(id_acts["ID"].ToString().Trim()));
                 }
             }
+
             comm.Connection.Close();
+
             for (int i = 0; i < id_acts_int.Count; i++)
             {
                 Show_Act(id_acts_int[i]);
@@ -1704,12 +1703,10 @@ namespace Garant1._0
         }
         void Show_Act(int ID_Act)
         {
-
             MySqlDataReader reader1 = ExecutQuery_Select("SELECT * FROM acts WHERE ID = '" + ID_Act + "'");
-            if (reader1 != null)
-            {
-                if (!reader1.HasRows)
-                {
+
+            if (reader1 != null) {
+                if (!reader1.HasRows) {
                     MessageBox.Show("Акт не найден.");
                     comm.Connection.Close();
                     return;
@@ -1725,6 +1722,7 @@ namespace Garant1._0
 
             appWord = new Word.Application();
             object path_sh = StartPath + "Shablon_Act_priemki.docx";
+
             try
             {
                 docWord = appWord.Documents.Add(ref path_sh, ref missobj, ref missobj, ref missobj);
@@ -1807,10 +1805,11 @@ namespace Garant1._0
             string bd_ID_User_act = "";
 
 
-            MySqlDataReader readact = ExecutQuery_Select("SELECT * FROM acts WHERE ID = '" + ID_Act + "'"); ;
+            MySqlDataReader readact = ExecutQuery_Select("SELECT * FROM acts WHERE ID = '" + ID_Act + "'");
+
             if (readact == null) return;
-            if (readact.HasRows != false)
-            {
+
+            if (readact.HasRows != false) {
                 while (readact.Read())
                 {
                     bd_ID_act = readact["ID"].ToString();
@@ -1834,15 +1833,6 @@ namespace Garant1._0
             bookmark_sp_pol_num_act.Range.Text = bd_num_dost_act;
             bookmark_sp_pol_date_act.Range.Text = bd_date_dost_act;
 
-
-            //meter meter1 = new meter() { Descr = "Лалка" };
-            //string json = JsonConvert.SerializeObject(meter1);
-
-            //MessageBox.Show(json);
-            //meter met2 = JsonConvert.DeserializeObject<meter>(json);
-            //MessageBox.Show(met2.Descr);
-
-            MessageBox.Show(bd_ID_Customer_JSON);
             customer cust = JsonConvert.DeserializeObject<customer>(bd_ID_Customer_JSON);
 
             bookmark_customer_act.Range.Text = cust.Descr;
@@ -1856,16 +1846,19 @@ namespace Garant1._0
 
             if (bd_Solution_act == "Негарантия") bookmark_negarant_act.Range.Text = "V";
 
-            MySqlDataReader readusr = ExecutQuery_Select("SELECT * FROM users WHERE ID = '" + bd_ID_User_act + "'"); ;
+            MySqlDataReader readusr = ExecutQuery_Select("SELECT * FROM users WHERE ID = '" + bd_ID_User_act + "'");
+
             if (readusr == null) return;
-            if (readusr.HasRows != false)
-            {
+            
+            if (readusr.HasRows != false) {
                 while (readusr.Read())
                 {
-                    bookmark_user_act.Range.Text = readusr["position"].ToString() + " " + readusr["Descr"].ToString();
+                    //bookmark_user_act.Range.Text = readusr["position"].ToString() + " " + readusr["Descr"].ToString();
+                    bookmark_user_act.Range.Text = readusr["Descr"].ToString();
                 }
             }
             comm.Connection.Close();
+
             bookmark_solution_act.Range.Text = bd_Solution_act;
             int all_prib_without_kit = 0;
             int all_prib_with_kit = 0;
@@ -1876,34 +1869,35 @@ namespace Garant1._0
             {
                 int sum_all = 0;
                 int sum_kompl = 0;
-                string type_meter_cikle = meters[i].TypeMeter;
-                if (type_meter_cikle == "none") continue;
+                string type_meter_cycle = meters[i].TypeMeter;
+
+                if (type_meter_cycle == "none") continue;
+
                 for (int a = 0; a < meters.Length; a++)
                 {
-                    if (meters[a].TypeMeter == type_meter_cikle)
-                    {
+                    if (meters[a].TypeMeter == type_meter_cycle) {
                         sum_all++;
                         all_prib_without_kit++;
-                        if (meters[a].kit.Trim() == "1")
-                        {
+
+                        if (meters[a].kit.Trim() == "1") {
                             sum_kompl++;
                             all_prib_with_kit++;
                         }
                         meters[a].TypeMeter = "none";
                     }
                 }
+
                 if (row >= 4) column = 4;
                 if (row >= 10) column = 6;
-                docWord.Tables[2].Cell(row, column).Range.Text = type_meter_cikle;
+
+                docWord.Tables[2].Cell(row, column).Range.Text = type_meter_cycle;
                 docWord.Tables[2].Cell(row, column + 1).Range.Text = sum_all.ToString();
                 docWord.Tables[2].Cell(row, column + 2).Range.Text = sum_kompl.ToString();
                 row++;
-                if (row >= 10)
-                    docWord.Tables[2].Rows.Add(ref missobj);
-                if (i == meters.Length - 1)
-                {
-                    if (i < 10)
-                    {
+
+                if (row >= 10)  docWord.Tables[2].Rows.Add(ref missobj);
+                if (i == meters.Length - 1) {
+                    if (i < 10) {
                         row = 10;
                         column = 6;
                     }
@@ -1915,8 +1909,7 @@ namespace Garant1._0
 
             Word.Bookmark[] bms = new Word.Bookmark[] { bookmark_ser_prib1_act, bookmark_ser_prib2_act, bookmark_ser_prib3_act, bookmark_ser_prib4_act, bookmark_ser_prib5_act };
 
-            if (all_prib_without_kit <= 5)
-            {
+            if (all_prib_without_kit <= 5) {
                 for (int i = 0; i < meters.Length; i++)
                 {
                     bms[i].Range.Text = meters[i].Ser_Num;
@@ -1924,28 +1917,20 @@ namespace Garant1._0
             }
 
             //docWord.Tables[2].Cell(2, 3).Range.Text = "Test";
-            /*
-            
 
-            Word.Bookmark bookmark_ser_prib1_act = docWord.Bookmarks[ref ser_prib1_act];
-            Word.Bookmark bookmark_ser_prib2_act = docWord.Bookmarks[ref ser_prib2_act];
-            Word.Bookmark bookmark_ser_prib3_act = docWord.Bookmarks[ref ser_prib3_act];
-            Word.Bookmark bookmark_ser_prib4_act = docWord.Bookmarks[ref ser_prib4_act];
-            Word.Bookmark bookmark_ser_prib5_act = docWord.Bookmarks[ref ser_prib5_act];
+            //Word.Bookmark bookmark_ser_prib1_act = docWord.Bookmarks[ref ser_prib1_act];
+            //Word.Bookmark bookmark_ser_prib2_act = docWord.Bookmarks[ref ser_prib2_act];
+            //Word.Bookmark bookmark_ser_prib3_act = docWord.Bookmarks[ref ser_prib3_act];
+            //Word.Bookmark bookmark_ser_prib4_act = docWord.Bookmarks[ref ser_prib4_act];
+            //Word.Bookmark bookmark_ser_prib5_act = docWord.Bookmarks[ref ser_prib5_act];
 
-            Word.Bookmark bookmark_negarant_act = docWord.Bookmarks[ref negarant_act];
-            Word.Bookmark bookmark_user_act = docWord.Bookmarks[ref user_act];
-            Word.Bookmark bookmark_date_act3 = docWord.Bookmarks[ref date_act3];
-            Word.Bookmark bookmark_solution_act = docWord.Bookmarks[ref solution_act];*/
-
-
-
+            //Word.Bookmark bookmark_negarant_act = docWord.Bookmarks[ref negarant_act];
+            //Word.Bookmark bookmark_user_act = docWord.Bookmarks[ref user_act];
+            //Word.Bookmark bookmark_date_act3 = docWord.Bookmarks[ref date_act3];
+            //Word.Bookmark bookmark_solution_act = docWord.Bookmarks[ref solution_act];
         }
 
-        private void act_priem_num_PN_TextChanged(object sender, EventArgs e)
-        {
-
-        }
+        private void act_priem_num_PN_TextChanged(object sender, EventArgs e) { }
 
         private void act_priem_num_acta_Click(object sender, EventArgs e)
         {
@@ -1962,12 +1947,15 @@ namespace Garant1._0
                 }
             }
             comm.Connection.Close();
-
         }
 
         private void Find_Act_Click(object sender, EventArgs e)
         {
-            Show_Act(Convert.ToInt32(act_priem_num_acta.Text));
+            try
+            {
+                Show_Act(Convert.ToInt32(act_priem_num_acta.Text));
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message);}
         }
 
         private void cb_coded_TextChanged(object sender, EventArgs e)
@@ -2004,9 +1992,7 @@ namespace Garant1._0
 
         private void cb_coded_Click(object sender, EventArgs e)
         {
-
-            if (cb_coded.Text.Trim() == "")
-            {
+            if (cb_coded.Text.Trim() == "") {
                 cb_coded.Items.Clear();
                 cb_coded.Items.AddRange(code_err_water);
             }
@@ -2018,21 +2004,17 @@ namespace Garant1._0
             //cb_coded.SelectionStart = 0;
         }
 
-        private void cb_coded_SelectionChangeCommitted(object sender, EventArgs e)
-        {
-        }
+        private void cb_coded_SelectionChangeCommitted(object sender, EventArgs e) { }
 
-        private void label11_Click(object sender, EventArgs e)
-        {
-        }
+        private void label11_Click(object sender, EventArgs e) { }
 
         private void tb_CLA_num_act_TextChanged(object sender, EventArgs e)
         {
             string num_act = tb_CLA_num_act.Text;
             label30.Text = label32.Text = "";
             MySqlDataReader act = ExecutQuery_Select("SELECT * FROM acts WHERE ID = '" + num_act + "'");
-            if (act != null)
-            {
+
+            if (act != null) {
                 while (act.Read())
                 {
                     label30.Text = act["TypeMeters"] + " " + act["Solution"];
@@ -2040,23 +2022,21 @@ namespace Garant1._0
                 }
             }
             comm.Connection.Close();
-
-
         }
 
         private void btn_find_CLA_Click(object sender, EventArgs e)
         {
             string num_act = tb_CLA_num_act.Text;
             MySqlDataReader reader1 = ExecutQuery_Select("SELECT * FROM acts WHERE ID = '" + num_act + "'");
-            if (reader1 != null)
-            {
-                if (!reader1.HasRows)
-                {
+
+            if (reader1 != null) {
+                if (!reader1.HasRows) {
                     MessageBox.Show("Акт, для формирования контрольного листка анализа не найден.");
                     comm.Connection.Close();
                     return;
                 }
             }
+
             comm.Connection.Close();
 
             if (label30.Text.IndexOf("СХВ/СГВ") != -1) Contr_list_analiza_SHV_SGV(num_act);
@@ -2065,7 +2045,6 @@ namespace Garant1._0
 
         void Contr_list_analiza_SHV_SGV(string num_act)
         {
-
             Word.Application appWord;
             Word.Document docWord = null;
             object missobj = System.Reflection.Missing.Value;
@@ -2074,6 +2053,7 @@ namespace Garant1._0
 
             appWord = new Word.Application();
             object path_sh = StartPath + "Kontr_list_analiza_shablon_SHV_SGV.docx";
+
             try
             {
                 docWord = appWord.Documents.Add(ref path_sh, ref missobj, ref missobj, ref missobj);
@@ -2086,6 +2066,7 @@ namespace Garant1._0
                 appWord = null;
                 throw err;
             }
+
             appWord.Visible = true;
             object ref_num = "num_act";
             object ref_kolvo = "kol_vo";
@@ -2096,7 +2077,6 @@ namespace Garant1._0
             Word.Bookmark bookmark_ref_customer = docWord.Bookmarks[ref ref_customer];
             Word.Bookmark bookmark_ref_date_an = docWord.Bookmarks[ref ref_date_an];
 
-
             Word.Table tbl = docWord.Tables[2];
             int row = 2;
             int kol_vo = 0;
@@ -2105,28 +2085,52 @@ namespace Garant1._0
             string bd_customer_JSON = "";
 
             MySqlDataReader act = ExecutQuery_Select("SELECT * FROM acts WHERE ID = '" + num_act + "'");
-            if (act != null)
-            {
-                while (act.Read())
-                {
+
+            if (act != null) {
+                while (act.Read()) {
                     bd_schitciki_JSON = act["Schetciki"].ToString();
                     bd_customer_JSON = act["ID_Customer"].ToString();
                 }
             }
+
             comm.Connection.Close();
 
-            bookmark_ref_customer.Range.Text = JsonConvert.DeserializeObject<customer>(bd_customer_JSON).Descr;
+            customer curCustomer = JsonConvert.DeserializeObject<customer>(bd_customer_JSON);
+            bookmark_ref_customer.Range.Text = curCustomer.Descr;
             bookmark_ref_num.Range.Text = num_act;
+
+            //act_customer = "{" +
+            //    "\"ID\":" + "\"" + cust.ID + "\"," +
+            //    "\"Descr\":" + "\"" + cust.Descr + "\"," +
+            //    "\"ContFace\":" + "\"" + cust.ContFace + "\"," +
+            //    "\"Phone\":" + "\"" + cust.Phone + "\"," +
+            //    "\"_Index\":" + "\"" + cust._Index + "\"," +
+            //    "\"Resp\":" + "\"" + cust.Resp + "\"," +
+            //    "\"Oblast\":" + "\"" + cust.Oblast + "\"," +
+            //    "\"City\":" + "\"" + cust.City + "\"," +
+            //    "\"Street\":" + "\"" + cust.Street + "\"," +
+            //    "\"Num_h\":" + "\"" + cust.Num_h + "\"," +
+            //    "\"Num_f\":" + "\"" + cust.Num_f + "\"" +
+            //    "}";
+
+            //bd_schitciki_JSON = "[{'IDParty' : 11, 'Codeb' : 'error code', 'DatePriem' :  '2024-02-02 04:27:19' , " +
+            //    "'TypeMeter' : 'just an any type', 'narabotka' : 'just an any narabotka', 'Set_Num' : 34, " +
+            //    "'DateCreate' : '2024-02-02 04:27:19', 'CustomerID' : 44, 'Solution' : 'just an any solution', " +
+            //    "'Code_err_user' : 'just an any code error user', 'UserID' : 34, 'DateAnaliz' : '2024-02-02 04:27:19', " +
+            //    "'Descr' : 'just an any description', 'kit' : 'any kit', 'sposob_dost' : 'just an any delivery method', " +
+            //    "'num_dost' : 45, 'date_dost' : '2024-02-02 04:27:19'}]";
+            //[{ "IDParty" : 11, "Codeb" : "error code", "DatePriem" :  "2024-02-02 04:27:19" , "TypeMeter" : "just an any type", "narabotka" : "just an any narabotka", "Set_Num" : 34, "DateCreate" : "2024-02-02 04:27:19", "CustomerID" : 44, "Solution" : "just an any solution", "Code_err_user" : "just an any code error user", "UserID" : 34, "DateAnaliz" : "2024-02-02 04:27:19", "Descr" : "just an any description", "kit" : "any kit", "sposob_dost" : "just an any delivery method", "num_dost" : 45, "date_dost" : "2024-02-02 04:27:19"}]
+            //{"name" : "any name", "surname" : "any surname", "address" : "any address", "Descr" : 466, "ContFace" : "any contact face", "Phone" : "8-4342-455-75-69", "_Index" : 1, "Resp" : "Domina Res Publica est Roma", "Oblast" : "any state", "City" : "any city", "Street" : "and any street", "Num_h" : 34, "Num_f" : 55}
 
             meter[] meters = JsonConvert.DeserializeObject<meter[]>(bd_schitciki_JSON);
 
             foreach (meter my_meter in meters)
             {
                 if (row == 2) bookmark_ref_date_an.Range.Text = my_meter.DateAnaliz.Substring(0, 10);
-                if (row == 16)
-                {
+                if (row == 16) {
                     tbl.Rows.Add(ref missobj);
                 }
+
                 tbl.Cell(row, 1).Range.Text = (row - 1).ToString();
                 tbl.Cell(row, 2).Range.Text = my_meter.Code_err_user;
                 tbl.Cell(row, 3).Range.Text = my_meter.TypeMeter;
@@ -2139,19 +2143,11 @@ namespace Garant1._0
                 kol_vo++;
             }
             bookmark_ref_kolvo.Range.Text = kol_vo.ToString();
-
-
         }
 
-        private void label24_Click(object sender, EventArgs e)
-        {
+        private void label24_Click(object sender, EventArgs e) { }
 
-        }
-
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
+        private void radioButton1_CheckedChanged(object sender, EventArgs e) { }
 
         private void btn_showCD_Click(object sender, EventArgs e)
         {
@@ -2159,22 +2155,18 @@ namespace Garant1._0
             _CD.ShowDialog();
         }
 
-        private void label23_Click(object sender, EventArgs e)
-        {
-
-        }
+        private void label23_Click(object sender, EventArgs e) { }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
             checkedListBox1.Items.Clear();
 
-            if (tabControl1.SelectedIndex == 1)
-            {
+            if (tabControl1.SelectedIndex == 1) {
+
                 MySqlDataReader reader1 = ExecutQuery_Select("SELECT * FROM `inwork` GROUP BY TypeMeter");
-                if (reader1 != null)
-                {
-                    if (reader1.HasRows)
-                    {
+
+                if (reader1 != null) {
+                    if (reader1.HasRows) {
                         while (reader1.Read())
                         {
                             checkedListBox1.Items.Add(reader1["TypeMeter"].ToString());
@@ -2188,16 +2180,12 @@ namespace Garant1._0
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox2.Checked == true)
-            {
+            if (checkBox2.Checked == true) {
                 cb_kv_end.Enabled = cb_kv_start.Enabled = cb_kv_year_end.Enabled = cb_kv_year_start.Enabled = true;
                 textBox1.Enabled = textBox2.Enabled = monthCalendar2.Enabled = monthCalendar1.Enabled = false;
-            }
-            else
-            {
+            } else {
                 cb_kv_end.Enabled = cb_kv_start.Enabled = cb_kv_year_end.Enabled = cb_kv_year_start.Enabled = false;
                 textBox1.Enabled = textBox2.Enabled = monthCalendar2.Enabled = monthCalendar1.Enabled = true;
-
             }
         }
 
@@ -2210,7 +2198,6 @@ namespace Garant1._0
         private void textBox1_Leave(object sender, EventArgs e)
         {
             //monthCalendar1.Visible = false;
-
         }
 
         private void textBox1_Enter(object sender, EventArgs e)
@@ -2221,13 +2208,11 @@ namespace Garant1._0
         private void textBox2_Enter(object sender, EventArgs e)
         {
             //monthCalendar2.Visible = true;
-
         }
 
         private void textBox2_Leave(object sender, EventArgs e)
         {
             //monthCalendar2.Visible = false;
-
         }
 
         private void monthCalendar2_DateChanged(object sender, DateRangeEventArgs e)
@@ -2235,10 +2220,7 @@ namespace Garant1._0
             textBox2.Text = e.Start.ToString("yyyy-MM-dd");
         }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
     }
     class act
     {
