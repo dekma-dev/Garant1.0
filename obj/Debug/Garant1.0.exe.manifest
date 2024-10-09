@@ -54,14 +54,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Garant1.0.exe" size="105440">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Garant1.0.exe" size="115168">
       <assemblyIdentity name="Garant1.0" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>OwfSYHNW/yAmYcK+sEAJEaO/QJ7IyF7sHdb11JrBpgk=</dsig:DigestValue>
+        <dsig:DigestValue>5EVbL48qxzWoOcfmXqERAEWhIC67yRuiB3hJQC+JuLc=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

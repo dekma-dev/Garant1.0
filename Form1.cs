@@ -1,6 +1,4 @@
-﻿//SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -14,14 +12,14 @@ using Word = Microsoft.Office.Interop.Word;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Reflection;
 using Newtonsoft.Json;
-using System.Text.Unicode;
-using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 namespace Garant1._0
 {
     public partial class Form1 : Form
     {
-        MySqlCommand comm;
+        public MySqlCommand comm;
 
         int ID_User;
 
@@ -31,78 +29,9 @@ namespace Garant1._0
 
         string[] code_err_water;
 
-        public Form1()
+        public Form1(MySqlCommand comm)
         {
-            InitializeComponent();
-
-            //code_err_water = new Dictionary<int, string>
-            //{
-            //    {71, "Не устанавливается" },
-            //    {70, "Счётчик воды в сборе!" },
-            //    {72, "Нарушена плома" },
-            //    {74, "Предположительно обратная установка" },
-            //    {80, "Паспорт!" },
-            //    {82, "Не совпадает номер прибора с номером в паспорте" },
-            //    {20, "Проливная часть в сборе!" },
-            //    {21, "Крыльчатка не вращается" },
-            //    {22, "Крыльчатка резко останавливается" },
-            //    {23, "Всё вращается" },
-            //    {25, "Отсутствует люфт без прокладки" },
-            //    {26, "Другое" },
-            //    {60, "Нарушение условий эксплуатации" },
-            //    {62, "Превышение давления" },
-            //    {63, "Механическое включение в камере" },
-            //    {64, "Крыльчатка оплавлена" },
-            //    {65, "Другое" },
-            //    {66, "Известковый налет на всей поверхности камеры" },
-            //    {30, "Корпус!" },
-            //    {31, "Неперпендикулярная ось" },
-            //    {32, "Налёт на оси" },
-            //    {331, "Износ оси" },
-            //    {34, "Занижена ось корпуса" },
-            //    {35, "Завышена ось корпуса" },
-            //    {37, "Течь корпуса (дефект литья)" },
-            //    {38, "Течь из-под кольца" },
-            //    {381, "Несоответствие диаметра (корпус)" },
-            //    {382, "Несоответствие диаметра (крышка)" },
-            //    {383, "Несоответствие размера 1,8" },
-            //    {384, "Несоответствие размера 4,4" },
-            //    {385, "Повреждение уплотнительного кольца" },
-            //    {386, "Другое" },
-            //    {39, "Несоответствующая резьба" },
-            //    {11, "Некачественная сборка!" },
-            //    {111, "Колёса другого типа" },
-            //    {113, "Разгерметизация" },
-            //    {114, "Повреждение деталей при сборке" },
-            //    {12, "Интегратор!" },
-            //    {121, "Не соответствует количество чёрных и красных барабанчиков" },
-            //    {122, "Большой люфт" },
-            //    {123, "Установка 1-4 разряда интегратора не на 0" },
-            //    {13, "Стопорение!" },
-            //    {131, "Мусор внутри СМ" },
-            //    {132, "Некачественные барабанчики" },
-            //    {133, "Некачественные колёса" },
-            //    {134, "Другое" },
-            //    {136, "Невозможно определить причину" },
-            //    {137, "Сломана цапфа муфты" },
-            //    {50, "Крыльчатка!" },
-            //    {51, "Налипание на оси" },
-            //    {52, "Налипание на магнитах" },
-            //    {54, "Вылетел кольцевой магнит из крыльчатки" },
-            //    {55, "Коррозия кольцевых магнитов" },
-            //    {56, "Отсутствует магнит" },
-            //    {40, "Крышка" },
-            //    {42, "Занижен ⌀ 1,5 втулки" },
-            //    {43, "Занижен наружный диаметр крышки" },
-            //    {44, "Не запрессован подпишник" },
-            //    {24, "Магниты в СМ и ПЧ разные" },
-            //    {241, "Счётчик антимагнитный (СМ-2, ПЧ-6)" },
-            //    {242, "Счётчик простой (СМ-2, ПЧ-6)" },
-            //    {243, "Счётчик антимагнитный (СМ-6, ПЧ-2)" },
-            //    {244, "Счётчик простой (СМ-6, ПЧ-2)" },
-            //};
-            code_err_water = new string[]
-            {
+            InitializeComponent();code_err_water = new string[] {
                 "70 - Счетчик воды в сборе!",
                 "71 - не устанавливался",
                 "72 - нарушена пломба",
@@ -166,78 +95,33 @@ namespace Garant1._0
                 "242 - Счетчик простой (СМ-2, ПЧ-6)",
                 "243 - Счетчик антимагнитный (СМ-6, ПЧ-2)",
                 "244 - Счетчик простой (СМ-6, ПЧ-2)"
-            };
+            }; 
 
-            //Form Menu = new Form();
-
-            //MessageBox.Show(Application.StartupPath);
             StartPath = Application.StartupPath + "\\";
 
-            comm = new MySqlCommand();
-            //const string connect = "Database=Monitoring;Data Source=localhost;UserId=root;Password=;CharSet=utf8";
-            const string connect = "server=127.0.0.1;user=root;database=Garant;port=3306;password=;charset=utf8mb4;convert zero datetime=True";
-            try
-            {
-                MySqlConnection connection = new MySqlConnection(connect);
-                comm.Connection = connection;
-            }
-            catch (MySql.Data.MySqlClient.MySqlException ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-            
+            this.comm = comm;
+
             SetSQLMode();
             Find_users();
-            //tabControl1.Enabled = false;
 
-            checkedListBox2.Items.Clear();
+            defectCodesList.Items.Clear();
             foreach (string code in code_err_water)
             {
-                checkedListBox2.Items.Add(code);
-
+                defectCodesList.Items.Add(code);
             }
-
-            /*
-            MySqlDataReader reader = ExecutQuery("SELECT * FROM customers");
-            if (reader != null)
-                while (reader.Read())
-                {
-                    MessageBox.Show(reader["ID"].ToString());
-                }
-            comm.Connection.Close();
-           
-            //MessageBox.Show(DateTime.Now.ToString());
-
-            //INSERT INTO `temptable`(`ID`, `Ser_Num`, `TypeMeter`, `Date`, `Solution`, `Codeb`) VALUES ([value-1],[value-2],[value-3],[value-4],[value-5],[value-6])
-
-            MySqlDataReader reader = ExecutQuery("INSERT INTO  temptable (`Ser_Num
-            , 'TypeMeter', 'Date', 'Solution', 'Codeb') VALUES ('46561984','СГВ-15','"+DateTime.Now.ToString()+"','Замена','1')");
-            if (reader != null)
-                while (reader.Read())
-                {
-                    //MessageBox.Show(reader["ID"].ToString());
-                }
-            comm.Connection.Close(); */
-            //MessageBox.Show(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
-
-            //ExecutQuery_Insert("INSERT INTO  temptable (`Ser_Num`, `TypeMeter`, `Date`, `Solution`, `Codeb`) VALUES ('46561984','СГВ-15','" + DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss") + "','Замена','1')");
-
-
-            //btn_add_pribor.Enabled = false;
-            //btn_refresh_pribor.Enabled = false;
 
             label24.Visible = false;
             label25.Visible = false;
-            tb_num_pochta.Visible = false;
-            tb_data_pochta.Visible = false;
-            tb_data_pochta.Text = "";
-            tb_num_pochta.Text = "";
+            mailNumberTB.Visible = false;
+            sendDateTB.Visible = false;
+            sendDateTB.Text = "";
+            mailNumberTB.Text = "";
 
             Create_DataGridView();
             fill_cb();
             FillDataGridViewCustomer();
-            cb_kv_year_end.Text = DateTime.Now.ToString("yyyy");
-            textBox1.Enabled = textBox2.Enabled = monthCalendar2.Enabled = monthCalendar1.Enabled = false;
+            reportYearEnd.Text = DateTime.Now.ToString("yyyy");
+            dateFromTB.Enabled = dateToTB.Enabled = monthCalendarTo.Enabled = monthCalendarFrom.Enabled = false;
         }
 
         void Find_users()
@@ -246,7 +130,7 @@ namespace Garant1._0
             if (reader != null)
                 while (reader.Read())
                 {
-                    comboBox_Users.Items.Add(reader["Descr"].ToString());
+                    choseUserComboBox.Items.Add(reader["Descr"].ToString());
                 }
             comm.Connection.Close();
         }
@@ -256,14 +140,13 @@ namespace Garant1._0
         {
             MySqlDataReader query1 = ExecutQuery_Select("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
             comm.Connection.Close();
-
+                
             //MySqlDataReader query3 = ExecutQuery_Select("SELECT @@GLOBAL.sql_mode global, @@SESSION.sql_mode session;SET sql_mode = '';SET GLOBAL sql_mode = '';");
             //comm.Connection.Close();
         }
 
         MySqlDataReader ExecutQuery_Select(String query)
         {
-            //err_label.Text = "";
             MySqlDataReader reader = null;
             try
             {
@@ -273,36 +156,23 @@ namespace Garant1._0
                     comm.Connection.Open();
                 }
                 reader = comm.ExecuteReader();
-
-
-                //MessageBox.Show(comm.Connection.State.ToString());
             }
             catch (MySql.Data.MySqlClient.MySqlException ex)
             {
-                //MessageBox.Show("err query = " + query);
                 richTextBox1.Text += ("err query = " + query + "\nData\"" + ex.Message + "\"\n");
                 MessageBox.Show(ex.Message);
-                //reader = ExecutQuery_Select(query);
-                /*tb_customer.Text = "";
-                tb_date.Clear();
-                tb_Serial_num.Clear();
-                tb_type.Clear();
-                cb_coded.Text = "";
-                cb_solution.Text = "";*/
             }
             return reader;
         }
 
-        int ExecutQuery_Insert(String query) // Вставска записей в БД
+        int ExecutQuery_Insert(String query)
         {
-            //err_label.Text = "";
             int i = 0;
             try
             {
                 comm.CommandText = query;
                 comm.Connection.Open();
                 i = comm.ExecuteNonQuery();
-                //richTextBox1.Text += ("ok insertquery = " + query + "\n");
             }
             catch (Exception e)
             {
@@ -314,9 +184,9 @@ namespace Garant1._0
 
         private void comboBox_Users_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (comboBox_Users.Text.Trim() != "") {
+            if (choseUserComboBox.Text.Trim() != "") {
                 tabControl1.Enabled = true;
-                MySqlDataReader reader = ExecutQuery_Select("SELECT * FROM users WHERE Descr = '" + comboBox_Users.Text + "'");
+                MySqlDataReader reader = ExecutQuery_Select("SELECT * FROM users WHERE Descr = '" + choseUserComboBox.Text + "'");
                 if (reader != null)
                     while (reader.Read())
                     {
@@ -328,35 +198,31 @@ namespace Garant1._0
                 tabControl1.Enabled = false;
             } 
 
-            Num_Party.Items.Clear();
-            cb_for_Otchet_Prih_Nak.Items.Clear();
+            chosePartysNumber.Items.Clear();
+            defectCode4FindAct.Items.Clear();
             Refresh_DataGridView();
 
+            chosePartysNumber.Items.Add("0 - Новая партия");
             MySqlDataReader reader2 = ExecutQuery_Select("SELECT DISTINCT IDParty FROM inwork");
             if (reader2 == null) return;
             if (reader2.HasRows != false) {
 
                 while (reader2.Read()) {
-                    Num_Party.Items.Add(reader2["IDParty"].ToString());
-                    cb_for_Otchet_Prih_Nak.Items.Add(reader2["IDParty"].ToString());
+                    chosePartysNumber.Items.Add(reader2["IDParty"].ToString());
+                    defectCode4FindAct.Items.Add(reader2["IDParty"].ToString());
                 }
-                //btn_add_pribor.Enabled = false;
-                //btn_refresh_pribor.Enabled = true;
             }
-            //Num_Party.Items.Add("Новая партия");
             comm.Connection.Close();
 
             Refresh_DataGridView();
         }
 
-        private void Form1_Load(object sender, EventArgs e) { }
-
         private async void tb_Serial_num_TextChanged(object sender, EventArgs e)
         {
-            string serial_num = tb_Serial_num.Text.Trim();
-            tb_date.Text = "";
-            tb_type.Text = "";
-            cb_coded.Items.Clear();
+            string serial_num = serialNumberTB.Text.Trim();
+            producedDateTB.Text = "";
+            metersTypeTB.Text = "";
+            defectCodeTB.Items.Clear();
             if (serial_num.Length == 8) {
 
                 await Task.Delay(10);
@@ -365,54 +231,42 @@ namespace Garant1._0
                 if (reader.HasRows != false) {
 
                     while (reader.Read()) {
-                        //Num_Party.Text = reader["IDParty"].ToString();
-                        tb_type.Text = reader["TypeMeter"].ToString();
-                        tb_descr.Text = reader["Descr"].ToString();
-                        tb_date.Text = reader.GetDateTime(7).ToString("yyyy-MM-dd hh:mm:ss");
-                        //tb_date.Text = reader["DateCreate"].ToString();
-                        //tb_dateAnaliz.Text = reader["DateAnaliz"].ToString();
-                        tb_dateAnaliz.Text = reader.GetDateTime(12).ToString("yyyy-MM-dd hh:mm:ss");
-                        //cb_coded.Text = (reader["Codeb"].ToString().Trim() != "") ? reader["Codeb"].ToString() : "";
+                        metersTypeTB.Text = reader["TypeMeter"].ToString();
+                        descriptionTB.Text = reader["Descr"].ToString();
+                        producedDateTB.Text = reader.GetDateTime(7).ToString("yyyy-MM-dd hh:mm:ss");
+                        analysedDateTB.Text = reader.GetDateTime(12).ToString("yyyy-MM-dd hh:mm:ss");
 
-                        cb_solution.Text = reader["Solution"].ToString();
-                        tb_customer.Text = reader["CustomerID"].ToString();
-                        cb_sposob_dost.Text = reader["sposob_dost"].ToString();
-                        tb_num_pochta.Text = (DBNull.Value.Equals(reader["num_dost"])) ? "" : reader["num_dost"].ToString();
-                        tb_data_pochta.Text = (DBNull.Value.Equals(reader["num_dost"])) ? "" : reader.GetDateTime(17).ToString("yyyy-MM-dd hh:mm:ss");
-                        tb_narab.Text = reader["narabotka"].ToString();
+                        choseSolution.Text = reader["Solution"].ToString();
+                        choseCustomer.Text = reader["CustomerID"].ToString();
+                        choseDeliveryMethod.Text = reader["sposob_dost"].ToString();
+                        mailNumberTB.Text = (DBNull.Value.Equals(reader["num_dost"])) ? "" : reader["num_dost"].ToString();
+                        sendDateTB.Text = (DBNull.Value.Equals(reader["num_dost"])) ? "" : reader.GetDateTime(17).ToString("yyyy-MM-dd hh:mm:ss");
+                        developmentTB.Text = reader["narabotka"].ToString();
 
-                        radioButton1.Checked = (reader["kit"].ToString() == "1") ? true : false;
-                        radioButton2.Checked = (reader["kit"].ToString() == "0") ? true : false;
+                        withKitButton.Checked = (reader["kit"].ToString() == "1") ? true : false;
+                        withoutKitButton.Checked = (reader["kit"].ToString() == "0") ? true : false;
 
-                        cb_coded.Items.AddRange(reader["Codeb"].ToString().Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries));
+                        defectCodeTB.Items.AddRange(reader["Codeb"].ToString().Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries));
 
 
 
-                        btn_add_pribor.Text = "Обновить";
+                        addMeterButton.Text = "Обновить";
 
-                    }
-                    //btn_add_pribor.Enabled = false;
-                    //btn_refresh_pribor.Enabled = true;
+                    } 
                 } else {
-                    btn_add_pribor.Text = "Добавить новый";
+                    addMeterButton.Text = "Добавить новый";
                     comm.Connection.Close();
 
                     reader = ExecutQuery_Select("SELECT * FROM temptable WHERE Ser_Num = '" + serial_num + "'");
                     if (reader != null) {
 
                         while (reader.Read()) {
-                            //MessageBox.Show(reader["Date"].ToString());
-                            tb_type.Text = reader["TypeMeter"].ToString();
-                            tb_date.Text = reader.GetDateTime(3).ToString("yyyy-MM-dd hh:mm:ss");
-                            //tb_date.Text = reader["Date"].ToString();
-                            cb_coded.Text = reader["Codeb"].ToString();
-                            //cb_solution.Text = reader["Solution"].ToString();
-                            //tb_customer.Text = reader["CustomerID"].ToString();
-                            tb_dateAnaliz.Text = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
+                            metersTypeTB.Text = reader["TypeMeter"].ToString();
+                            producedDateTB.Text = reader.GetDateTime(3).ToString("yyyy-MM-dd hh:mm:ss");
+                            defectCodeTB.Text = reader["Codeb"].ToString();
+                            analysedDateTB.Text = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
                         }
                     }
-                    //btn_add_pribor.Enabled = true;
-                    //btn_refresh_pribor.Enabled = false;
                 }
                 comm.Connection.Close();
             }
@@ -421,88 +275,83 @@ namespace Garant1._0
         private void btn_add_pribor_Click(object sender, EventArgs e)
         {
             string codes_braka = "";
-            foreach (string d in cb_coded.Items)
+            foreach (string d in defectCodeTB.Items)
             {
                 codes_braka += d + '|';
             }
-            MessageBox.Show(codes_braka);
-            if (btn_add_pribor.Text.Trim() == "Обновить")
+
+            if (addMeterButton.Text.Trim() == "Обновить")
             {
                 find_row = false;
-                int kit = (radioButton1.Checked == true) ? 1 : 0;
-                //UPDATE `inwork` SET `ID`=[value-1],`IDParty`=[value-2],`Ser_Num`=[value-3],`TypeMeter`=[value-4],`DateCreate`=[value-5],`Solution`=[value-6],`Codeb`=[value-7],`CustomerID`=[value-8],`UserID`=[value-9],`DateCheck`=[value-10] WHERE 1
-                int res = ExecutQuery_Insert("UPDATE `inwork` SET `Ser_Num`='"
-                    + tb_Serial_num.Text + "',`TypeMeter`='"
-                    + tb_type.Text + "',`DateCreate`='" + tb_date.Text + "',`Solution`='"
-                    + cb_solution.Text + "',`Codeb`='" + codes_braka + "',`Code_err_user`='" + cb_code_cust.Text + "',`CustomerID`='" + tb_customer.Text + "',`UserID`='"
-                    + ID_User + "',`DateAnaliz`='" + DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss") + "',`Descr`='" + tb_descr.Text + "',`kit`='"
-                    + kit + "',`sposob_dost`='" + cb_sposob_dost.Text + "',`num_dost`='" + tb_num_pochta.Text + "',`date_dost`='" + tb_data_pochta.Text
-                    + "',`narabotka`='" + tb_narab.Text + "' WHERE Ser_Num='" + tb_Serial_num.Text + "';");
+                int kit = (withKitButton.Checked == true) ? 1 : 0;
 
-                tb_customer.Text = "";
-                tb_date.Clear();
-                tb_Serial_num.Clear();
-                tb_type.Clear();
-                cb_coded.Items.Clear();
-                //cb_solution.Text = "";
+                int res = ExecutQuery_Insert("UPDATE `inwork` SET `Ser_Num`='"
+                    + serialNumberTB.Text + "',`TypeMeter`='"
+                    + metersTypeTB.Text + "',`DateCreate`='" + producedDateTB.Text + "',`Solution`='"
+                    + choseSolution.Text + "',`Codeb`='" + codes_braka + "',`Code_err_user`='" + defectCodeFromConsumer.Text + "',`CustomerID`='" + choseCustomer.Text.Split(',')[0] + "',`UserID`='"
+                    + ID_User + "',`DateAnaliz`='" + DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss") + "',`Descr`='" + descriptionTB.Text + "',`kit`='"
+                    + kit + "',`sposob_dost`='" + choseDeliveryMethod.Text + "',`num_dost`='" + mailNumberTB.Text + "',`date_dost`='" + sendDateTB.Text
+                    + "',`narabotka`='" + developmentTB.Text + "' WHERE Ser_Num='" + serialNumberTB.Text + "';");
+
+                choseCustomer.Text = "";
+                producedDateTB.Clear();
+                serialNumberTB.Clear();
+                metersTypeTB.Clear();
+                defectCodeTB.Items.Clear();
                 Refresh_DataGridView();
-                tb_narab.Text = "";
+                developmentTB.Text = "";
 
             } else {
 
-                if (Num_Party.Text == "Новая партия") {
-                    MySqlDataReader reader = ExecutQuery_Select("SELECT MAX(IDParty) as IDParty FROM inwork");
-                    if (reader != null)
+                if (chosePartysNumber.Text == "0 - Новая партия") {
 
+                    MySqlDataReader reader = ExecutQuery_Select("SELECT MAX(IDParty) as IDParty FROM inwork");
+
+                    if (reader != null)
                         while (reader.Read())
                         {
-                            Num_Party.Items[Num_Party.Items.Count - 1] = Convert.ToInt32(reader["IDParty"]) + 1;
-                            cb_for_Otchet_Prih_Nak.Items.Add(Convert.ToInt32(reader["IDParty"]) + 1);
-                            Num_Party.Items.Add("Новая партия");
+                            chosePartysNumber.Items[chosePartysNumber.Items.Count - 1] = Convert.ToInt32(reader["IDParty"]) + 1;
+                            defectCode4FindAct.Items.Add(Convert.ToInt32(reader["IDParty"]) + 1);
+                            this.chosePartysNumber.SelectedIndex = this.chosePartysNumber.Items.Count - 1;
+                            //мб нужен рефреш потому что ласт итем пропадает, лечится перезагрузкой приложения
                         }
                     comm.Connection.Close();
                 }
 
                 find_row = false;
-                int kit = (radioButton1.Checked == true) ? 1 : 0;
-                //int num_dost = (tb_num_pochta.Text == "") ? 0 : Convert.ToInt32(tb_num_pochta.Text);
-                //string date_dost = (tb_data_pochta.Text == "") ? "" : tb_data_pochta.Text;
+                int kit = (withKitButton.Checked == true) ? 1 : 0;
 
-                if (cb_sposob_dost.Text == "Непосредственно от потреб.") { 
-                    int res = ExecutQuery_Insert("INSERT INTO `inwork` (`ID`, `IDParty`, `Ser_Num`, `TypeMeter`, `DateCreate`, `Solution`, `Codeb`, `CustomerID`, `UserID`, `DatePriem`, `DateAnaliz`, `Descr`, `kit`, `sposob_dost`, `num_dost`, `date_dost`, `narabotka`,`Code_err_user`) VALUES (NULL, '"
-                    + Num_Party.Text + "', '" + tb_Serial_num.Text + "', '" + tb_type.Text + "', '"
-                    + tb_date.Text + "', '" + cb_solution.Text + "', '" + codes_braka + "', '" + tb_customer.Text
-                    + "', '" + ID_User + "', '" + DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss") + "', '"
-                    + DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss") + "', '" + tb_descr.Text + "', '"
-                    + kit + "', '"
-                    + cb_sposob_dost.Text + "', "
-                    + "NULL, "
-                    + "NULL, '"
-                    + tb_narab.Text + "', '"
-                    + cb_code_cust.Text + "');"); 
+                if (choseDeliveryMethod.Text == "Непосредственно от потреб.") {
+                    int res = ExecutQuery_Insert("INSERT INTO `inwork` (`IDParty`, `Ser_Num`, `TypeMeter`, `DateCreate`, `Solution`, `Codeb`, `CustomerID`, `UserID`, `DatePriem`, `DateAnaliz`, `Descr`, `kit`, `sposob_dost`, `num_dost`, `date_dost`, `narabotka`,`Code_err_user`) VALUES ('"
+                        + chosePartysNumber.Text.Split('-')[0] + "', '" + serialNumberTB.Text + "', '" + metersTypeTB.Text + "', '"
+                        + producedDateTB.Text + "', '" + choseSolution.Text + "', '" + codes_braka + "', '" + choseCustomer.Text.Split(',')[0]
+                        + "', '" + ID_User + "', '" + DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss") + "', '"
+                        + DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss") + "', '" + descriptionTB.Text + "', '"
+                        + kit + "', '"
+                        + choseDeliveryMethod.Text + "', "
+                        + "NULL, "
+                        + "NULL, '"
+                        + developmentTB.Text + "', '"
+                        + defectCodeFromConsumer.Text + "');");
                 } else {
-                    int res = ExecutQuery_Insert("INSERT INTO `inwork` (`ID`, `IDParty`, `Ser_Num`, `TypeMeter`, `DateCreate`, `Solution`, `Codeb`, `CustomerID`, `UserID`, `DatePriem`, `DateAnaliz`, `Descr`, `kit`, `sposob_dost`, `num_dost`, `date_dost`, `narabotka`,`Code_err_user`) VALUES (NULL, '"
-                    + Num_Party.Text + "', '" + tb_Serial_num.Text + "', '" + tb_type.Text + "', '"
-                    + tb_date.Text + "', '" + cb_solution.Text + "', '" + codes_braka + "', '" + tb_customer.Text
-                    + "', '" + ID_User + "', '" + DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss") + "', '"
-                    + DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss") + "', '" + tb_descr.Text + "', '"
-                    + kit + "', '"
-                    + cb_sposob_dost.Text + "', '"
-                    + tb_num_pochta.Text + "', '"
-                    + tb_data_pochta.Text + "', '"
-                    + tb_narab.Text + "', '"
-                    + cb_code_cust.Text + "');");
+                    int res = ExecutQuery_Insert("INSERT INTO `inwork` (`IDParty`, `Ser_Num`, `TypeMeter`, `DateCreate`, `Solution`, `Codeb`, `CustomerID`, `UserID`, `DatePriem`, `DateAnaliz`, `Descr`, `kit`, `sposob_dost`, `num_dost`, `date_dost`, `narabotka`,`Code_err_user`) VALUES ('"
+                        + chosePartysNumber.Text.Split('-')[0] + "', '" + serialNumberTB.Text + "', '" + metersTypeTB.Text + "', '"
+                        + producedDateTB.Text + "', '" + choseSolution.Text + "', '" + codes_braka + "', '" + choseCustomer.Text.Split(',')[0]
+                        + "', '" + ID_User + "', '" + DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss") + "', '"
+                        + DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss") + "', '" + descriptionTB.Text + "', '"
+                        + kit + "', '"
+                        + choseDeliveryMethod.Text + "', '"
+                        + mailNumberTB.Text + "', '"
+                        + sendDateTB.Text + "', '"
+                        + developmentTB.Text + "', '"
+                        + defectCodeFromConsumer.Text + "');");                        
                 }
-                //int res = ExecutQuery_Insert("INSERT INTO `inwork` (`ID`, `IDParty`, `Ser_Num`, `TypeMeter`, `DateCreate`, `Solution`, `CustomerID`, `UserID`, `DatePriem`, `DateAnaliz`, `Descr`) VALUES (NULL, '" + Num_Party.Text + "', '" + tb_Serial_num.Text + "', '" + tb_type.Text + "', '" + tb_date.Text + "', '" + cb_solution.Text + "', '" + tb_customer.Text + "', '" + ID_User + "', '" + DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss") + "', '" + tb_dateAnaliz.Text + "', '" + tb_descr.Text + "');");
-                //MessageBox.Show(res + "");
-                //tb_customer.Text = "";
-                tb_date.Clear();
-                tb_Serial_num.Clear();
-                tb_type.Clear();
-                cb_coded.Items.Clear();
-                //cb_solution.Text = "";
-                tb_dateAnaliz.Text = "";
-                tb_narab.Text = "";
+                producedDateTB.Clear();
+                serialNumberTB.Clear();
+                metersTypeTB.Clear();
+                defectCodeTB.Items.Clear();
+                analysedDateTB.Text = "";
+                developmentTB.Text = "";
                 Refresh_DataGridView();
             }
         }
@@ -514,19 +363,18 @@ namespace Garant1._0
             int code = 0;
             try
             {
-                code = Convert.ToInt32(cb_coded.Text);
+                code = Convert.ToInt32(defectCodeTB.Text);
             }
             catch { }
-            int kit = (radioButton1.Checked == true) ? 1 : 0;
-            //UPDATE `inwork` SET `ID`=[value-1],`IDParty`=[value-2],`Ser_Num`=[value-3],`TypeMeter`=[value-4],`DateCreate`=[value-5],`Solution`=[value-6],`Codeb`=[value-7],`CustomerID`=[value-8],`UserID`=[value-9],`DateCheck`=[value-10] WHERE 1
-            int res = ExecutQuery_Insert("UPDATE `inwork` SET `Ser_Num`='" + tb_Serial_num.Text + "',`TypeMeter`='" + tb_type.Text + "',`DateCreate`='" + tb_date.Text + "',`Solution`='" + cb_solution.Text + "',`Codeb`='" + code + "',`CustomerID`='" + tb_customer.Text + "',`UserID`='" + ID_User + "',`DateAnaliz`='" + tb_dateAnaliz.Text + "',`Descr`='" + tb_descr.Text + "',`kit`='" + kit + "' WHERE Ser_Num='" + tb_Serial_num.Text + "';");
+            int kit = (withKitButton.Checked == true) ? 1 : 0;
+            int res = ExecutQuery_Insert("UPDATE `inwork` SET `Ser_Num`='" + serialNumberTB.Text + "',`TypeMeter`='" + metersTypeTB.Text + "',`DateCreate`='" + producedDateTB.Text + "',`Solution`='" + choseSolution.Text + "',`Codeb`='" + code + "',`CustomerID`='" + choseCustomer.Text + "',`UserID`='" + ID_User + "',`DateAnaliz`='" + analysedDateTB.Text + "',`Descr`='" + descriptionTB.Text + "',`kit`='" + kit + "' WHERE Ser_Num='" + serialNumberTB.Text + "';");
 
-            tb_customer.Text = "";
-            tb_date.Clear();
-            tb_Serial_num.Clear();
-            tb_type.Clear();
-            cb_coded.Text = "";
-            cb_solution.Text = "";
+            choseCustomer.Text = "";
+            producedDateTB.Clear();
+            serialNumberTB.Clear();
+            metersTypeTB.Clear();
+            defectCodeTB.Text = "";
+            choseSolution.Text = "";
             Refresh_DataGridView();
 
         }
@@ -535,16 +383,14 @@ namespace Garant1._0
         {
             var con_num = new DataGridViewColumn();
             con_num.HeaderText = "№";
-            //con_num.Width = 25; //ширина колонки
-            con_num.ReadOnly = true; //значение в этой колонке нельзя править
+            con_num.ReadOnly = true;
             con_num.Name = "Number";
-            //con_num.Frozen = true; //флаг, что данная колонка всегда отображается на своем месте
             con_num.CellTemplate = new DataGridViewTextBoxCell();
 
             var column1 = new DataGridViewColumn();
-            column1.HeaderText = "Серийный номер"; //текст в шапке
-            column1.Name = "SerNum"; //текстовое имя колонки, его можно использовать вместо обращений по индексу
-            column1.CellTemplate = new DataGridViewTextBoxCell(); //тип нашей колонки
+            column1.HeaderText = "Серийный номер";
+            column1.Name = "SerNum";
+            column1.CellTemplate = new DataGridViewTextBoxCell();
 
             var column2 = new DataGridViewColumn();
             column2.HeaderText = "Тип";
@@ -554,7 +400,6 @@ namespace Garant1._0
             var column3 = new DataGridViewColumn();
             column3.HeaderText = "Дата производства";
             column3.Name = "Date_made";
-            //column3.Width = 100;
             column3.CellTemplate = new DataGridViewTextBoxCell();
 
             var column4 = new DataGridViewColumn();
@@ -565,19 +410,16 @@ namespace Garant1._0
             var column5 = new DataGridViewColumn();
             column5.HeaderText = "Причина";
             column5.Name = "Solution";
-            //column5.Width = 100;
             column5.CellTemplate = new DataGridViewTextBoxCell();
 
             var column5_5 = new DataGridViewColumn();
             column5_5.HeaderText = "Код (Потреб.)";
             column5_5.Name = "CodeA";
-            //column6.Width = 50;
             column5_5.CellTemplate = new DataGridViewTextBoxCell();
 
             var column6 = new DataGridViewColumn();
             column6.HeaderText = "Код дефекта";
             column6.Name = "CodeB";
-            //column6.Width = 50;
             column6.CellTemplate = new DataGridViewTextBoxCell();
 
             var column7 = new DataGridViewColumn();
@@ -585,134 +427,105 @@ namespace Garant1._0
             column7.Name = "User";
             column7.CellTemplate = new DataGridViewTextBoxCell();
 
-            /*var column8 = new DataGridViewColumn();
-            column8.HeaderText = "Дата приема";
-            column8.Name = "Date_priem";
-            //column8.Width = 100;
-            column8.CellTemplate = new DataGridViewTextBoxCell();*/
             var column8 = new DataGridViewColumn();
             column8.HeaderText = "Наработка";
             column8.Name = "Narabotka";
-            //column8.Width = 100;
             column8.CellTemplate = new DataGridViewTextBoxCell();
 
             var column9 = new DataGridViewColumn();
             column9.HeaderText = "Дата анализа";
             column9.Name = "Date_Analiz";
-            //column9.Width = 100;
             column9.CellTemplate = new DataGridViewTextBoxCell();
 
 
             var column10 = new DataGridViewColumn();
             column10.HeaderText = "Примечание";
             column10.Name = "Descr";
-            //column10.Width = 150;
             column10.CellTemplate = new DataGridViewTextBoxCell();
 
             var column11 = new DataGridViewColumn();
             column11.HeaderText = "Комплект";
             column11.Name = "Kit";
-            //column10.Width = 150;
             column11.CellTemplate = new DataGridViewTextBoxCell();
 
-            dataGridView1.Columns.Add(con_num);
-            dataGridView1.Columns.Add(column8);
-            dataGridView1.Columns.Add(column2);
-            dataGridView1.Columns.Add(column1);
-            dataGridView1.Columns.Add(column3);
-            dataGridView1.Columns.Add(column4);
-            dataGridView1.Columns.Add(column5);
-            dataGridView1.Columns.Add(column5_5);
-            dataGridView1.Columns.Add(column6);
-            dataGridView1.Columns.Add(column7);
-            dataGridView1.Columns.Add(column9);
-            dataGridView1.Columns.Add(column10);
-            dataGridView1.Columns.Add(column11);
+            mainDataGridView.Columns.Add(con_num);
+            mainDataGridView.Columns.Add(column8);
+            mainDataGridView.Columns.Add(column2);
+            mainDataGridView.Columns.Add(column1);
+            mainDataGridView.Columns.Add(column3);
+            mainDataGridView.Columns.Add(column4);
+            mainDataGridView.Columns.Add(column5);
+            mainDataGridView.Columns.Add(column5_5);
+            mainDataGridView.Columns.Add(column6);
+            mainDataGridView.Columns.Add(column7);
+            mainDataGridView.Columns.Add(column9);
+            mainDataGridView.Columns.Add(column10);
+            mainDataGridView.Columns.Add(column11);
 
 
-            dataGridView1.AllowUserToAddRows = false; //запрешаем пользователю самому добавлять строки
-            dataGridView1.AllowUserToDeleteRows = false;
-            dataGridView1.AllowUserToOrderColumns = false;
-
-
-            //Refresh_DataGridView();
+            mainDataGridView.AllowUserToAddRows = false; 
+            mainDataGridView.AllowUserToDeleteRows = false;
+            mainDataGridView.AllowUserToOrderColumns = false;
         }
-        void Refresh_DataGridView()
+        async void Refresh_DataGridView()
         {
-            dataGridView1.Rows.Clear();
-            MySqlDataReader reader = ExecutQuery_Select("SELECT * FROM `inwork` WHERE IDParty = '" + Num_Party.Text + "'");
+            if (chosePartysNumber.Text == "0 - Новая партия") return;
+
+            mainDataGridView.Rows.Clear();
+
+            await Task.Delay(10);
+            MySqlDataReader reader = ExecutQuery_Select("SELECT * FROM `inwork` WHERE IDParty = '" + chosePartysNumber.Text + "'");
             int i = 1;
+
             if (reader == null) return;
-            if (reader.HasRows != false)
+            try
             {
-                while (reader.Read())
+                if (reader.HasRows != false)
                 {
-                    dataGridView1.Rows.Add(i, reader["narabotka"].ToString(), reader["TypeMeter"].ToString(), reader["Ser_Num"].ToString(), reader["DateCreate"].ToString(),
-                        reader["CustomerID"].ToString(), reader["Solution"].ToString(), reader["Code_err_user"].ToString(), reader["Codeb"].ToString(), reader["UserID"].ToString(), reader["DateAnaliz"].ToString(), reader["Descr"].ToString(), reader["kit"].ToString());
-                    i++;
+                    while (reader.Read())
+                    {
+                        mainDataGridView.Rows.Add(i, reader["narabotka"].ToString(), reader["TypeMeter"].ToString(), reader["Ser_Num"].ToString(), reader["DateCreate"].ToString(),
+                            reader["CustomerID"].ToString(), reader["Solution"].ToString(), reader["Code_err_user"].ToString(), reader["Codeb"].ToString(), reader["UserID"].ToString(), reader["DateAnaliz"].ToString(), reader["Descr"].ToString(), reader["kit"].ToString());
+                        i++;
+                    }
                 }
-                //btn_add_pribor.Enabled = false;
-                //btn_refresh_pribor.Enabled = true;
+
             }
+            catch (Exception error) { MessageBox.Show(error.Message); }
+
             comm.Connection.Close();
+
             find_row = true;
+            choseCustomer.Items.Clear();
+            await Task.Delay(10);
 
-
-            tb_customer.Items.Clear();
             reader = ExecutQuery_Select("SELECT * FROM `customers`");
+
             if (reader.HasRows != false)
             {
                 while (reader.Read())
                 {
-                    tb_customer.Items.Add(reader["Descr"].ToString());
+                    choseCustomer.Items.Add(reader["ID"].ToString() + ", " + reader["Descr"].ToString());
                 }
-                //btn_add_pribor.Enabled = false;
-                //btn_refresh_pribor.Enabled = true;
             }
+
             comm.Connection.Close();
 
+            await Task.Delay(10);
         }
 
         private void dataGridView1_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-            if (find_row == false)
-                return;
+            if (find_row == false) return;
 
-            //MessageBox.Show(dataGridView1["SerNum", e.RowIndex].Value.ToString());
-            //MessageBox.Show("RowEnter");
-            tb_Serial_num.Text = dataGridView1["SerNum", e.RowIndex].Value.ToString();
-        }
-
-        private void Num_Party_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Refresh_DataGridView();
-        }
-
-        private void Num_Party_TextChanged(object sender, EventArgs e)
-        {
-            //Refresh_DataGridView();
-        }
-
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void err_label_Click(object sender, EventArgs e)
-        {
-            //err_label.Text = "";
-        }
-
-        private void dataGridView1_DoubleClick(object sender, EventArgs e)
-        {
-
+            serialNumberTB.Text = mainDataGridView["SerNum", e.RowIndex].Value.ToString();
         }
 
         private void Create_Priz_Nak_Click(object sender, EventArgs e)
         {
-            if (cb_for_Otchet_Prih_Nak.Text.Trim() == "") return;
+            if (defectCode4FindAct.Text.Trim() == "") return;
 
-            MySqlDataReader reader1 = ExecutQuery_Select("SELECT * FROM inwork WHERE IDParty = '" + cb_for_Otchet_Prih_Nak.Text + "'");
+            MySqlDataReader reader1 = ExecutQuery_Select("SELECT * FROM inwork WHERE IDParty = '" + defectCode4FindAct.Text + "'");
             if (reader1 != null)
             {
                 if (!reader1.HasRows)
@@ -768,15 +581,14 @@ namespace Garant1._0
             Word.Bookmark bookmark_Customer2 = docWord.Bookmarks[ref refCustomer2];
             Word.Bookmark bookmark_USER2 = docWord.Bookmarks[ref refUSER2];
 
-            bookmark_NUM.Range.Text = cb_for_Otchet_Prih_Nak.Text;
+            bookmark_NUM.Range.Text = defectCode4FindAct.Text;
             bookmark_Date.Range.Text = DateTime.Now.ToString("D");
 
-            bookmark_NUM2.Range.Text = cb_for_Otchet_Prih_Nak.Text;
+            bookmark_NUM2.Range.Text = defectCode4FindAct.Text;
             bookmark_Date2.Range.Text = DateTime.Now.ToString("D");
 
-            //CustomerID
             string USER_ID = "0";
-            MySqlDataReader reader = ExecutQuery_Select("SELECT CustomerID, UserID FROM inwork WHERE IDParty = '" + cb_for_Otchet_Prih_Nak.Text + "'");
+            MySqlDataReader reader = ExecutQuery_Select("SELECT CustomerID, UserID FROM inwork WHERE IDParty = '" + defectCode4FindAct.Text + "'");
             if (reader != null)
             {
                 while (reader.Read())
@@ -817,14 +629,13 @@ namespace Garant1._0
             List<string> types_meter = new List<string>();
             List<string> reasons_meter = new List<string>();
 
-            MySqlDataReader type_data = ExecutQuery_Select("SELECT DISTINCT TypeMeter FROM inwork WHERE IDParty = '" + cb_for_Otchet_Prih_Nak.Text + "'");
+            MySqlDataReader type_data = ExecutQuery_Select("SELECT DISTINCT TypeMeter FROM inwork WHERE IDParty = '" + defectCode4FindAct.Text + "'");
             {
                 if (type_data != null)
                 {
                     while (type_data.Read())
                     {
                         types_meter.Add(type_data["TypeMeter"].ToString());
-                        //MessageBox.Show(type_data["TypeMeter"].ToString());
                     }
                 }
             }
@@ -833,25 +644,22 @@ namespace Garant1._0
             foreach (string type in types_meter)
             {
                 reasons_meter.Clear();
-                MySqlDataReader reason = ExecutQuery_Select("SELECT DISTINCT Solution FROM inwork WHERE IDParty = '" + cb_for_Otchet_Prih_Nak.Text + "' AND TypeMeter = '" + type + "'");
+                MySqlDataReader reason = ExecutQuery_Select("SELECT DISTINCT Solution FROM inwork WHERE IDParty = '" + defectCode4FindAct.Text + "' AND TypeMeter = '" + type + "'");
                 {
                     if (reason != null)
                     {
                         while (reason.Read())
                         {
                             reasons_meter.Add(reason["Solution"].ToString());
-                            //MessageBox.Show(reason["Solution"].ToString());
 
                         }
                     }
                 }
                 comm.Connection.Close();
-                //MessageBox.Show(reasons_meter.Count.ToString());
 
                 foreach (string solution in reasons_meter)
                 {
-                    //MessageBox.Show(type + "  " + solution);
-                    MySqlDataReader withoutKit = ExecutQuery_Select("SELECT COUNT(*) as count FROM inwork WHERE IDParty = '" + cb_for_Otchet_Prih_Nak.Text + "' AND TypeMeter = '" + type + "' AND Solution = '" + solution + "'");
+                    MySqlDataReader withoutKit = ExecutQuery_Select("SELECT COUNT(*) as count FROM inwork WHERE IDParty = '" + defectCode4FindAct.Text + "' AND TypeMeter = '" + type + "' AND Solution = '" + solution + "'");
                     if (withoutKit != null)
                     {
                         while (withoutKit.Read())
@@ -874,29 +682,23 @@ namespace Garant1._0
 
                             all_kol_int += Convert.ToInt32(withoutKit["count"]);
                             row++;
-                            //MessageBox.Show(type + "  " + solution + "  " + withoutKit["count"]);
                         }
                     }
                     comm.Connection.Close();
-                    MySqlDataReader withKit = ExecutQuery_Select("SELECT COUNT(*) as count FROM inwork WHERE IDParty = '" + cb_for_Otchet_Prih_Nak.Text + "' AND TypeMeter = '" + type + "' AND Solution = '" + solution + "' AND kit = '1'");
+                    MySqlDataReader withKit = ExecutQuery_Select("SELECT COUNT(*) as count FROM inwork WHERE IDParty = '" + defectCode4FindAct.Text + "' AND TypeMeter = '" + type + "' AND Solution = '" + solution + "' AND kit = '1'");
                     if (withKit != null)
                     {
                         while (withKit.Read())
                         {
-                            //if (row != 2) tableWord.Rows.Add(tableWord.Rows[2]);
                             tableWord.Cell(row - 1, 3).Range.Text = withKit["count"].ToString();
                             tableWord2.Cell(row - 1, 3).Range.Text = withKit["count"].ToString();
 
                             all_kit_int += Convert.ToInt32(withKit["count"]);
-                            //MessageBox.Show(type + "  " + solution + "  " + withoutKit["count"]);
                         }
                     }
                     comm.Connection.Close();
                 }
-
-
             }
-
 
             Word.Bookmark bookmark_all_kol = docWord.Bookmarks[ref all_kol];
             Word.Bookmark bookmark_all_kit = docWord.Bookmarks[ref all_kit];
@@ -913,37 +715,27 @@ namespace Garant1._0
             appWord.Visible = true;
 
 
-            MySqlDataReader acts = ExecutQuery_Select("SELECT COUNT(*) as count FROM acts WHERE IDParty = '" + cb_for_Otchet_Prih_Nak.Text + "'");
-            if (acts != null)
-            {
+            MySqlDataReader acts = ExecutQuery_Select("SELECT COUNT(*) as count FROM acts WHERE IDParty = '" + defectCode4FindAct.Text + "'");
+
+            if (acts != null) {
                 while (acts.Read())
                 {
-                    if (Convert.ToInt32(acts["count"]) > 0)
-                    {
+                    if (Convert.ToInt32(acts["count"]) > 0) {
                         comm.Connection.Close();
-                        //MessageBox.Show("Есть строки");
-
-                    }
-                    else
-                    {
-                        //MessageBox.Show("нет строки");
+                    } else {
                         comm.Connection.Close();
-                        Form_acts(cb_for_Otchet_Prih_Nak.Text);
+                        Form_acts(defectCode4FindAct.Text);
 
                     }
                     break;
                 }
-            }
-            else
-            {
-                MessageBox.Show("Записей нет");
-            }
+            } else { MessageBox.Show("Записей нет"); }
+
             comm.Connection.Close();
-            if (checkBox1.Checked)
-            {
-                Show_All_Acts(Convert.ToInt32(cb_for_Otchet_Prih_Nak.Text));
-            }
+
+            if (withActsCheckBox.Checked) { Show_All_Acts(Convert.ToInt32(defectCode4FindAct.Text)); }
         }
+
         void fill_cb()
         {
             MySqlDataReader reader = ExecutQuery_Select("SELECT * FROM reasonreturn");
@@ -951,32 +743,32 @@ namespace Garant1._0
             {
                 while (reader.Read())
                 {
-                    cb_solution.Items.Add(reader["Reason"].ToString());
+                    choseSolution.Items.Add(reader["Reason"].ToString());
                 }
             }
             comm.Connection.Close();
         }
 
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
+        private void radioButton2_CheckedChanged(object sender, EventArgs e) { }
 
         void FillDataGridViewCustomer()
         {
-            dataGridView2.Rows.Clear();
+            agentsDataGridView.Rows.Clear();
+
             MySqlDataReader reader = ExecutQuery_Select("SELECT * FROM `customers`");
+
             int i = 1;
+
             if (reader == null) return;
-            if (reader.HasRows != false)
-            {
+            if (reader.HasRows != false) {
                 while (reader.Read())
                 {
-                    dataGridView2.Rows.Add(reader["ID"].ToString(), reader["Descr"].ToString(), reader["ContFace"].ToString(), reader["Phone"].ToString(), reader["_Index"].ToString(),
+                    agentsDataGridView.Rows.Add(reader["ID"].ToString(), reader["Descr"].ToString(), reader["name"], reader["surname"], reader["address"], reader["ContFace"].ToString(), reader["Phone"].ToString(), reader["_Index"].ToString(),
                         reader["Resp"].ToString(), reader["Oblast"].ToString(), reader["City"].ToString(), reader["Street"].ToString(), reader["Num_h"].ToString(), reader["Num_f"].ToString());
                     i++;
                 }
             }
+
             comm.Connection.Close();
         }
 
@@ -984,16 +776,17 @@ namespace Garant1._0
         {
             add_customer.Text = (cust_id.Text.Trim() == "") ? "Добавить нового" : "Обновить";
 
-            if (cust_id.Text.Trim() != "")
-            {
+            if (cust_id.Text.Trim() != "") {
                 MySqlDataReader reader = ExecutQuery_Select("SELECT * FROM `customers` WHERE ID = '" + cust_id.Text.Trim() + "'");
-                //int i = 1;
+
                 if (reader == null) return;
-                if (reader.HasRows != false)
-                {
+                if (reader.HasRows != false) {
                     while (reader.Read())
                     {
                         cust_name.Text = reader["Descr"].ToString();
+                        customerNameTextBox.Text = reader["name"].ToString();
+                        customerLastnameTextBox.Text = reader["surname"].ToString();
+                        customerAddressTextBox.Text = reader["address"].ToString();
                         cust_face.Text = reader["ContFace"].ToString();
                         cust_phone.Text = reader["Phone"].ToString();
                         cust_index.Text = reader["_Index"].ToString();
@@ -1005,16 +798,20 @@ namespace Garant1._0
                         cust_flat.Text = reader["Num_f"].ToString();
                     }
                 }
+
                 comm.Connection.Close();
             }
         }
-
-        private void add_customer_Click(object sender, EventArgs e)
+             
+        async private void add_customer_Click(object sender, EventArgs e)
         {
             if (cust_id.Text.Trim() != "")
             {
                 int res = ExecutQuery_Insert("UPDATE `customers` SET `Descr`='" + cust_name.Text + "" +
                     "',`ContFace`='" + cust_face.Text + "" +
+                    "',`name`='" + customerNameTextBox.Text + "" +
+                    "',`surname`='" + customerLastnameTextBox.Text + "" +
+                    "',`address`='" + customerAddressTextBox.Text + "" +
                     "',`Phone`='" + cust_phone.Text + "',`_Index`='" + cust_index.Text +
                     "',`Resp`='" + cust_resp.Text + "',`Oblast`='" + cust_raion.Text +
                     "',`City`='" + cust_city.Text + "',`Street`='" + cust_street.Text +
@@ -1022,18 +819,14 @@ namespace Garant1._0
             }
             else
             {
-                int res = ExecutQuery_Insert("INSERT INTO `customers` (`ID`, `Descr`, `ContFace`, `Phone`, `_Index`, `Resp`, `Oblast`, `City`, `Street`, `Num_h`, `Num_f`) " +
-                    "VALUES (NULL, '" + cust_name.Text + "', '" + cust_face.Text + "', '" + cust_phone.Text + "', '" + cust_index.Text + "', '"
+                int res = ExecutQuery_Insert("INSERT INTO `customers` (`ID`, `name`, `surname`, `address`, `Descr`, `ContFace`, `Phone`, `_Index`, `Resp`, `Oblast`, `City`, `Street`, `Num_h`, `Num_f`) " +
+                    "VALUES (NULL, '" + customerNameTextBox.Text + "', '" + customerLastnameTextBox.Text + "', '" + customerAddressTextBox.Text + "', '" + cust_name.Text + "', '" + cust_face.Text + "', '" + cust_phone.Text + "', '" + cust_index.Text + "', '"
                     + cust_resp.Text + "', '" + cust_raion.Text + "', '" + cust_city.Text + "', '" + cust_street.Text + "', '" + cust_house.Text + "', '" + cust_flat.Text + "');");
             }
 
+            await Task.Delay(10);
             FillDataGridViewCustomer();
             Refresh_DataGridView();
-        }
-
-        private void dataGridView2_RowEnter(object sender, DataGridViewCellEventArgs e)
-        {
-            cust_id.Text = dataGridView2["Column1", e.RowIndex].Value.ToString();
         }
 
         private void sbros_customer_Click(object sender, EventArgs e)
@@ -1053,21 +846,21 @@ namespace Garant1._0
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cb_sposob_dost.Text == "Непосредственно от потреб.")
+            if (choseDeliveryMethod.Text == "Непосредственно от потреб.")
             {
                 label24.Visible = false;
                 label25.Visible = false;
-                tb_num_pochta.Visible = false;
-                tb_data_pochta.Visible = false;
-                tb_data_pochta.Text = "";
-                tb_num_pochta.Text = "";
+                mailNumberTB.Visible = false;
+                sendDateTB.Visible = false;
+                sendDateTB.Text = "";
+                mailNumberTB.Text = "";
             }
             else
             {
                 label24.Visible = true;
                 label25.Visible = true;
-                tb_num_pochta.Visible = true;
-                tb_data_pochta.Visible = true;
+                mailNumberTB.Visible = true;
+                sendDateTB.Visible = true;
             }
         }
 
@@ -1077,92 +870,87 @@ namespace Garant1._0
             string text_data = "Отчет по \"";
             bool have_meter = false;
             bool have_code_err = false;
-            string[] errors = new string[checkedListBox2.Items.Count];
+            string[] errors = new string[defectCodesList.Items.Count];
             int error_index = 0;
 
-            for (int i = 0; i < checkedListBox1.Items.Count; i++)
+            for (int i = 0; i < meterTypesList.Items.Count; i++)
             {
-                if (checkedListBox1.GetItemChecked(i))
-                {
-                    if (have_meter == true)
-                    {
+                if (meterTypesList.GetItemChecked(i)) {
+                    if (have_meter == true) {
                         query += " OR ";
                     }
+
                     have_meter = true;
-                    query += "TypeMeter = '" + checkedListBox1.Items[i] + "'";
-                    text_data += checkedListBox1.Items[i] + " ";
+                    query += "TypeMeter = '" + meterTypesList.Items[i] + "'";
+                    text_data += meterTypesList.Items[i] + " ";
                 }
             }
-            if (have_meter == false)
-            {
-                query += "1";
-            }
+
+            if (have_meter == false) { query += "1"; }
+
             query += ") AND (";
             text_data += "\" по \"";
             have_meter = false;
-            for (int i = 0; i < checkedListBox2.Items.Count; i++)
+            for (int i = 0; i < defectCodesList.Items.Count; i++)
             {
-                if (checkedListBox2.GetItemChecked(i))
-                {
-                    if (have_meter == true)
-                    {
-                        query += " OR ";
-                    }
+                if (defectCodesList.GetItemChecked(i)) {
+                    if (have_meter == true) { query += " OR "; }
+
                     have_meter = true;
-                    query += "Codeb LIKE '%" + checkedListBox2.Items[i] + "%'";
-                    text_data += checkedListBox2.Items[i] + " ";
+                    query += "Codeb LIKE '%" + defectCodesList.Items[i] + "%'";
+                    text_data += defectCodesList.Items[i] + " ";
                     have_code_err = true;
 
-                    errors[error_index] = checkedListBox2.Items[i] + "";
+                    errors[error_index] = defectCodesList.Items[i] + "";
                     error_index++;
                 }
             }
-            if (have_meter == false)
-            {
-                query += "1";
-            }
+
+            if (have_meter == false) { query += "1"; }
+
             query += ") AND (DatePriem BETWEEN ";
             text_data += "\" за ";
 
-            if (checkBox2.Checked == true)
-            {
-                text_data += cb_kv_year_start.Text + "|" + cb_kv_start.Text + "| : " + cb_kv_year_end.Text + "|" + cb_kv_end.Text + "|";
-                if (cb_kv_start.Text == cb_kv_end.Text && cb_kv_year_end.Text == cb_kv_year_start.Text)
+            if (choseType4Excel.Checked == true) {
+                text_data += reportYearStart.Text + "|" + reportQuarterStart.Text + "| : " + reportYearEnd.Text + "|" + reportQuarterEnd.Text + "|";
+                if (reportQuarterStart.Text == reportQuarterEnd.Text && reportYearEnd.Text == reportYearStart.Text)
                 {
-                    switch (cb_kv_start.Text)
+                    switch (reportQuarterStart.Text)
                     {
-                        case "1": query += "'" + cb_kv_year_start.Text + "-" + "01" + "-" + "01 00:00:00' and '" + cb_kv_year_start.Text + "-" + "03" + "-" + "31 23:59:59'"; break;
-                        case "2": query += "'" + cb_kv_year_start.Text + "-" + "04" + "-" + "01 00:00:00' and '" + cb_kv_year_start.Text + "-" + "06" + "-" + "30 23:59:59'"; break;
-                        case "3": query += "'" + cb_kv_year_start.Text + "-" + "07" + "-" + "01 00:00:00' and '" + cb_kv_year_start.Text + "-" + "09" + "-" + "30 23:59:59'"; break;
-                        case "4": query += "'" + cb_kv_year_start.Text + "-" + "10" + "-" + "01 00:00:00' and '" + cb_kv_year_start.Text + "-" + "12" + "-" + "31 23:59:59'"; break;
-                        default: query += "'" + cb_kv_year_start.Text + "-" + "01" + "-" + "01 00:00:00' and '" + cb_kv_year_start.Text + "-" + "03" + "-" + "31 23:59:59'"; break;
+                        case "1": query += "'" + reportYearStart.Text + "-" + "01" + "-" + "01 00:00:00' and '" + reportYearStart.Text + "-" + "03" + "-" + "31 23:59:59'"; break;
+                        case "2": query += "'" + reportYearStart.Text + "-" + "04" + "-" + "01 00:00:00' and '" + reportYearStart.Text + "-" + "06" + "-" + "30 23:59:59'"; break;
+                        case "3": query += "'" + reportYearStart.Text + "-" + "07" + "-" + "01 00:00:00' and '" + reportYearStart.Text + "-" + "09" + "-" + "30 23:59:59'"; break;
+                        case "4": query += "'" + reportYearStart.Text + "-" + "10" + "-" + "01 00:00:00' and '" + reportYearStart.Text + "-" + "12" + "-" + "31 23:59:59'"; break;
+                        default: query += "'" + reportYearStart.Text + "-" + "01" + "-" + "01 00:00:00' and '" + reportYearStart.Text + "-" + "03" + "-" + "31 23:59:59'"; break;
                     }
                 }
                 else
                 {
-                    switch (cb_kv_start.Text)
+                    switch (reportQuarterStart.Text)
                     {
-                        case "1": query += "'" + cb_kv_year_start.Text + "-" + "01" + "-" + "01 00:00:00'"; break;
-                        case "2": query += "'" + cb_kv_year_start.Text + "-" + "04" + "-" + "01 00:00:00'"; break;
-                        case "3": query += "'" + cb_kv_year_start.Text + "-" + "07" + "-" + "01 00:00:00'"; break;
-                        case "4": query += "'" + cb_kv_year_start.Text + "-" + "10" + "-" + "01 00:00:00'"; break;
-                        default: query += "'" + cb_kv_year_start.Text + "-" + "01" + "-" + "01 00:00:00'"; break;
+                        case "1": query += "'" + reportYearStart.Text + "-" + "01" + "-" + "01 00:00:00'"; break;
+                        case "2": query += "'" + reportYearStart.Text + "-" + "04" + "-" + "01 00:00:00'"; break;
+                        case "3": query += "'" + reportYearStart.Text + "-" + "07" + "-" + "01 00:00:00'"; break;
+                        case "4": query += "'" + reportYearStart.Text + "-" + "10" + "-" + "01 00:00:00'"; break;
+                        default: query += "'" + reportYearStart.Text + "-" + "01" + "-" + "01 00:00:00'"; break;
                     }
                     query += " and ";
-                    switch (cb_kv_end.Text)
+                    switch (reportQuarterEnd.Text)
                     {
-                        case "1": query += "'" + cb_kv_year_end.Text + "-" + "03" + "-" + "31 23:59:59'"; break;
-                        case "2": query += "'" + cb_kv_year_end.Text + "-" + "06" + "-" + "30 23:59:59'"; break;
-                        case "3": query += "'" + cb_kv_year_end.Text + "-" + "09" + "-" + "30 23:59:59'"; break;
-                        case "4": query += "'" + cb_kv_year_end.Text + "-" + "12" + "-" + "31 23:59:59'"; break;
-                        default: query += "'" + cb_kv_year_end.Text + "-" + "03" + "-" + "31 23:59:59'"; break;
+                        case "1": query += "'" + reportYearEnd.Text + "-" + "03" + "-" + "31 23:59:59'"; break;
+                        case "2": query += "'" + reportYearEnd.Text + "-" + "06" + "-" + "30 23:59:59'"; break;
+                        case "3": query += "'" + reportYearEnd.Text + "-" + "09" + "-" + "30 23:59:59'"; break;
+                        case "4": query += "'" + reportYearEnd.Text + "-" + "12" + "-" + "31 23:59:59'"; break;
+                        default: query += "'" + reportYearEnd.Text + "-" + "03" + "-" + "31 23:59:59'"; break;
                     }
                 }
             }
             else
             {
-                text_data += textBox1.Text + " : " + textBox2.Text;
-                query += "'" + textBox1.Text + " 00:00:00' and '" + textBox2.Text + " 23:59:59'";
+                if (dateFromTB.Text == "" || dateToTB.Text == "") { MessageBox.Show("Пожалуйста, укажите временной интервал ОТ и ДО при помощи календаря!"); return; }
+
+                text_data += dateFromTB.Text + " : " + dateToTB.Text;
+                query += "'" + dateFromTB.Text + " 00:00:00' and '" + dateToTB.Text + " 23:59:59'";
             }
 
             query += ")";
@@ -1173,24 +961,6 @@ namespace Garant1._0
             string[] rimsk = new string[] { "0", "I", "II", "III", "IV" };
 
             MySqlDataReader data = ExecutQuery_Select(query);
-            //var dataList = new List<string>();
-
-            //if (data != null)
-            //{
-            //    MessageBox.Show("Not empty query");
-            //    while (data.Read())
-            //    {
-            //        for (int index = 0; index < data.FieldCount; index++)
-            //        {
-            //            dataList.Add(data[index].ToString());
-            //        }
-            //    }
-            //    data.Close();
-            //}
-
-            //var jsonData = JsonConvert.SerializeObject(dataList);
-            //MessageBox.Show(jsonData);
-
 
             if (data != null)
             {
@@ -1207,11 +977,11 @@ namespace Garant1._0
 
                 int row = 3;
 
-                int year = Convert.ToInt32(cb_kv_year_start.Text);
-                int kv = Convert.ToInt32(cb_kv_start.Text);
+                int year = Convert.ToInt32(reportYearStart.Text);
+                int kv = Convert.ToInt32(reportQuarterStart.Text);
                 if (have_code_err == false)
                 {
-                    if (checkBox2.Checked == true)
+                    if (choseType4Excel.Checked == true)
                     {
                         //по кварталам
                         sheet.Cells[2, 1] = "ПЕРЕОД";
@@ -1225,12 +995,12 @@ namespace Garant1._0
                         sheet.Columns.AutoFit();
                         sheet.Columns["A:A"].ColumnWidth = 14;
 
-                        while (year <= Convert.ToInt32(cb_kv_year_end.Text))
+                        while (year <= Convert.ToInt32(reportYearEnd.Text))
                         {
                             sheet.Cells[row, 1] = rimsk[kv] + " кв. " + year + " г.";
                             row++;
                             kv++;
-                            if (kv - 1 == Convert.ToInt32(cb_kv_end.Text) && year == Convert.ToInt32(cb_kv_year_end.Text))
+                            if (kv - 1 == Convert.ToInt32(reportQuarterEnd.Text) && year == Convert.ToInt32(reportYearEnd.Text))
                                 kv = 5;
                             if (kv == 5)
                             {
@@ -1331,9 +1101,9 @@ namespace Garant1._0
                      * поскольку каждый счётчик может иметь более одного кода ошибки/возврата.
                      */
 
-                    if (checkBox2.Checked == true)
+                    if (choseType4Excel.Checked == true)
                     {
-                        int years = Convert.ToInt32(cb_kv_year_end.Text) - Convert.ToInt32(cb_kv_year_start.Text);
+                        int years = Convert.ToInt32(reportYearEnd.Text) - Convert.ToInt32(reportYearStart.Text);
                         int last_column = 0;
                         range = sheet.Range[sheet.Cells[2, 1], sheet.Cells[4, 1]];
                         range.Merge();
@@ -1348,8 +1118,8 @@ namespace Garant1._0
                         range.Merge();
                         sheet.Cells[2, 3] = "Процент к общему количеству приборов";
 
-                        int start_year = Convert.ToInt32(cb_kv_year_start.Text);
-                        int end_year = Convert.ToInt32(cb_kv_year_end.Text);
+                        int start_year = Convert.ToInt32(reportYearStart.Text);
+                        int end_year = Convert.ToInt32(reportYearEnd.Text);
 
                         for (int i = start_year; i <= end_year; i++)
                         {
@@ -1444,24 +1214,15 @@ namespace Garant1._0
 
         private void dataGridView2_RowEnter_1(object sender, DataGridViewCellEventArgs e)
         {
-            cust_id.Text = dataGridView2["Column1", e.RowIndex].Value.ToString();
+            cust_id.Text = agentsDataGridView["Column1", e.RowIndex].Value.ToString();
         }
 
         void Form_acts(string act_IDParty)
         {
             MySqlDataReader max_id = ExecutQuery_Select("SELECT MAX(ID) as Max_ID FROM acts");
+
             int act_ID = 0;
-            string act_Date = "";
-            string act_sposob_dost = "";
-            string act_num_dost = "";
-            string act_date_dost = "";
-            string act_customer = "";
-            //string act_meters = "";
-
-            //meter[] meters_;
-
-            customer cust = null;
-            string customerid = "";
+            string act_Date = "", act_sposob_dost = "", act_num_dost = null, act_date_dost = null, customerid = "";
 
             if (max_id != null) {
                 while (max_id.Read()) {
@@ -1470,18 +1231,22 @@ namespace Garant1._0
                     }
                 }
             }
+
             act_ID++;
             comm.Connection.Close();
 
             MySqlDataReader find_date = ExecutQuery_Select("SELECT * FROM inwork WHERE IDParty='" + act_IDParty + "' ORDER BY DatePriem DESC");
+            MySqlDataReader selectedIdCustomer = ExecutQuery_Select("SELECT * FROM inwork WHERE IDParty='" + act_IDParty + "' ORDER BY DatePriem DESC");
 
-            if (find_date != null) {
-                while (find_date.Read()) {
+            if (find_date != null)
+            {
+                while (find_date.Read())
+                {
 
                     act_Date = find_date["DatePriem"].ToString();
                     act_sposob_dost = find_date["sposob_dost"].ToString();
-                    act_num_dost = find_date["num_dost"].ToString();
-                    act_date_dost = find_date["date_dost"].ToString();
+                    act_num_dost = Convert.IsDBNull(find_date["num_dost"]) ? "NULL" : find_date["num_dost"].ToString();
+                    act_date_dost = Convert.IsDBNull(find_date["date_dost"]) ? "NULL" : find_date["date_dost"].ToString();
                     customerid = find_date["CustomerID"].ToString();
                     break;
                 }
@@ -1489,55 +1254,16 @@ namespace Garant1._0
 
             comm.Connection.Close();
 
-            MySqlDataReader find_customer = ExecutQuery_Select("SELECT * FROM customers WHERE Descr = '" + customerid + "'");
-
-            if (find_customer != null) {
-                while (find_customer.Read()) {
-
-                    cust = new customer
-                    {
-                        ID = find_customer["ID"].ToString(),
-                        Descr = find_customer["Descr"].ToString(),
-                        ContFace = find_customer["ContFace"].ToString(),
-                        Phone = find_customer["Phone"].ToString(),
-                        _Index = find_customer["_Index"].ToString(),
-                        Resp = find_customer["Resp"].ToString(),
-                        Oblast = find_customer["Oblast"].ToString(),
-                        City = find_customer["City"].ToString(),
-                        Street = find_customer["Street"].ToString(),
-                        Num_h = find_customer["Num_h"].ToString(),
-                        Num_f = find_customer["Num_f"].ToString()
-                    };
-                    break;
-                }
-            }
-
-            comm.Connection.Close();
-
-            //act_customer = JsonSerializer.Serialize<customer>(cust);
-            act_customer = "{" +
-                "\"ID\":" + "\"" + cust.ID + "\"," +
-                "\"Descr\":" + "\"" + cust.Descr + "\"," +
-                "\"ContFace\":" + "\"" + cust.ContFace + "\"," +
-                "\"Phone\":" + "\"" + cust.Phone + "\"," +
-                "\"_Index\":" + "\"" + cust._Index + "\"," +
-                "\"Resp\":" + "\"" + cust.Resp + "\"," +
-                "\"Oblast\":" + "\"" + cust.Oblast + "\"," +
-                "\"City\":" + "\"" + cust.City + "\"," +
-                "\"Street\":" + "\"" + cust.Street + "\"," +
-                "\"Num_h\":" + "\"" + cust.Num_h + "\"," +
-                "\"Num_f\":" + "\"" + cust.Num_f + "\"" +
-                "}";
-
             List<string> reasons = new List<string>();
-            List<string> like_types_meters = new List<string>();
-            like_types_meters.Add("(TypeMeter LIKE '%СХВ%' OR TypeMeter LIKE '%СГВ%')");
-            like_types_meters.Add("(TypeMeter LIKE '%СГБМ%' OR TypeMeter LIKE '%СГБУ%')");
-            like_types_meters.Add("(TypeMeter LIKE '%СВМ%')");
-            like_types_meters.Add("(TypeMeter LIKE '%ЭСО%' OR TypeMeter LIKE '%БАРС%')");
-            like_types_meters.Add("(TypeMeter LIKE '%СТК%')");
-            like_types_meters.Add("(TypeMeter LIKE '%ПВМ%')");
-            like_types_meters.Add("(TypeMeter LIKE '%РД%')");
+            List<string> like_types_meters = new List<string>() {
+                "(TypeMeter LIKE '%СХВ%' OR TypeMeter LIKE '%СГВ%')",
+                "(TypeMeter LIKE '%СГБМ%' OR TypeMeter LIKE '%СГБУ%')",
+                "(TypeMeter LIKE '%СВМ%')",
+                "(TypeMeter LIKE '%ЭСО%' OR TypeMeter LIKE '%БАРС%')",
+                "(TypeMeter LIKE '%СТК%')",
+                "(TypeMeter LIKE '%ПВМ%')",
+                "(TypeMeter LIKE '%РД%')" 
+            };
 
             MySqlDataReader find_reasons = ExecutQuery_Select("SELECT * FROM reasonreturn");
 
@@ -1569,8 +1295,7 @@ namespace Garant1._0
 
                     if (find_meter != null) {
                         while (find_meter.Read()) {
-                            meters.Add(new meter()
-                            {
+                            meters.Add(new meter() {
                                 IDParty = act_IDParty,
                                 Ser_Num = find_meter["Ser_Num"].ToString(),
                                 TypeMeter = find_meter["TypeMeter"].ToString(),
@@ -1589,7 +1314,6 @@ namespace Garant1._0
                                 narabotka = find_meter["narabotka"].ToString(),
                                 Code_err_user = find_meter["Code_err_user"].ToString()
                             });
-                            //MessageBox.Show(find_meter["ID"] + " " + find_meter["IDParty"] + " " + find_meter["TypeMeter"] + " " + find_meter["Solution"] + " ");
                         }
                         comm.Connection.Close();
 
@@ -1620,67 +1344,30 @@ namespace Garant1._0
                             if (i != meters.Count - 1) data_meter_json += ",";
                         }
                         data_meter_json += "]";
-                        ExecutQuery_Insert("INSERT INTO `acts`" +
-                            "(`ID`, `Date`, `IDParty`," +
-                            " `sposob_dost`, `num_dost`, `date_dost`," +
-                            " `ID_Customer`, `Schetciki`, `Solution`, `TypeMeters`, `ID_User`)" +
-                            " VALUES ('" + act_ID + "','" + meters[0].DatePriem + "','" + act_IDParty + "'," +
-                            "'" + act_sposob_dost + "','" + act_num_dost + "','" + act_date_dost + "'," +
-                            "'" + act_customer + "','" + data_meter_json + "','" + reason + "','" + type_prib + "','" + meters[0].UserID + "')");
+
+                        if (act_date_dost == "NULL"  || act_num_dost == "NULL") {
+                            ExecutQuery_Insert("INSERT INTO `acts`" +
+                                "(`ID`, `Date`, `IDParty`," +
+                                " `sposob_dost`, `num_dost`, `date_dost`," +
+                                " `ID_Customer`, `Meters`, `Solution`, `TypeMeters`, `ID_User`)" +
+                                " VALUES ('" + act_ID + "', '" + Convert.ToDateTime(meters[0].DatePriem).ToString("yyyy-MM-dd hh:mm:ss") + "', '" + act_IDParty +
+                                "', '" + act_sposob_dost + "', NULL, NULL" +
+                                ", '" + customerid + "', '" + data_meter_json + "', '" + reason + "', '" + type_prib + "','" + meters[0].UserID + "')");
+                        } else {
+                            ExecutQuery_Insert("INSERT INTO `acts`" +
+                                "(`ID`, `Date`, `IDParty`," +
+                                " `sposob_dost`, `num_dost`, `date_dost`," +
+                                " `ID_Customer`, `Meters`, `Solution`, `TypeMeters`, `ID_User`)" +
+                                " VALUES ('" + act_ID + "', '" + Convert.ToDateTime(meters[0].DatePriem).ToString("yyyy-MM-dd hh:mm:ss") + "', '" + act_IDParty +
+                                "', '" + act_sposob_dost + "', '" + act_num_dost + "', '" + Convert.ToDateTime(act_date_dost).ToString("yyyy-MM-dd hh:mm:ss") + "'," +
+                                "'" + customerid + "', '" + data_meter_json + "', '" + reason + "', '" + type_prib + "','" + meters[0].UserID + "')");
+                        }
                         act_ID++;
                     }
+
                     comm.Connection.Close();
-                    //MessageBox.Show("Новое");
                 }
             }
-            /*
-            int count_meters=0;
-            MySqlDataReader find_meters = ExecutQuery_Select("SELECT COUNT(*) as count FROM inwork WHERE IDParty = '" + act_IDParty + "'");
-            if (find_meters != null)
-            {
-                while (find_meters.Read())
-                {
-                    count_meters = Convert.ToInt32(find_meters["count"].ToString());
-                    break;
-                }
-            }
-            comm.Connection.Close();
-            meters_ = new meter[count_meters];
-            int i = 0;
-            find_meters = ExecutQuery_Select("SELECT * FROM inwork WHERE IDParty = '" + act_IDParty + "'");
-            if (find_meters != null)
-            {
-                while (find_meters.Read())
-                {
-                    meters_[i] = new meter
-                    {
-                        IDParty = act_IDParty,
-                        Ser_Num=find_meters["Ser_Num"].ToString(),
-                        TypeMeter = find_meters["TypeMeter"].ToString(),
-                        DateCreate = find_meters["DateCreate"].ToString(),
-                        Solution = find_meters["Solution"].ToString(),
-                        Codeb = find_meters["Codeb"].ToString(),
-                        CustomerID = find_meters["CustomerID"].ToString(),
-                        UserID = find_meters["UserID"].ToString(),
-                        DatePriem = find_meters["DatePriem"].ToString(),
-                        DateAnaliz = find_meters["DateAnaliz"].ToString(),
-                        Descr = find_meters["Descr"].ToString(),
-                        kit = find_meters["kit"].ToString(),
-                        sposob_dost = find_meters["sposob_dost"].ToString(),
-                        num_dost = find_meters["num_dost"].ToString(),
-                        date_dost = find_meters["date_dost"].ToString()
-                    };
-                    i++;
-                }
-            }
-            comm.Connection.Close();
-
-
-
-            
-            act_meters = JsonSerializer.Serialize<meter[]>(meters_);
-            act_ID++;
-            */
         }
         void Show_All_Acts(int IDParty)
         {
@@ -1793,37 +1480,35 @@ namespace Garant1._0
             Word.Bookmark bookmark_date_act3 = docWord.Bookmarks[ref date_act3];
             Word.Bookmark bookmark_solution_act = docWord.Bookmarks[ref solution_act];
 
-            string bd_ID_act = "";
-            string bd_date_act = "";
-            string bd_IDParty_act = "";
-            string bd_sp_dost_act = "";
-            string bd_num_dost_act = "";
-            string bd_date_dost_act = "";
-            string bd_ID_Customer_JSON = "";
-            string bd_ID_Schetciki_JSON = "";
-            string bd_Solution_act = "";
-            string bd_ID_User_act = "";
-
+            string bd_ID_act = "", bd_date_act = "", bd_IDParty_act = "", bd_sp_dost_act = "", bd_num_dost_act = "", bd_date_dost_act = "";
+            string bd_ID_Customer = "", bd_Solution_act = "", bd_ID_User_act = "", bd_ID_Meters = "";
+            string[] metersID = new string[] { };
 
             MySqlDataReader readact = ExecutQuery_Select("SELECT * FROM acts WHERE ID = '" + ID_Act + "'");
 
             if (readact == null) return;
 
-            if (readact.HasRows != false) {
-                while (readact.Read())
+            try
+            {
+                if (readact.HasRows != false)
                 {
-                    bd_ID_act = readact["ID"].ToString();
-                    bd_date_act = readact["Date"].ToString();
-                    bd_IDParty_act = readact["IDParty"].ToString();
-                    bd_sp_dost_act = readact["sposob_dost"].ToString();
-                    bd_num_dost_act = readact["num_dost"].ToString();
-                    bd_date_dost_act = readact["date_dost"].ToString();
-                    bd_ID_Customer_JSON = readact["ID_Customer"].ToString();
-                    bd_ID_Schetciki_JSON = readact["Schetciki"].ToString();
-                    bd_Solution_act = readact["Solution"].ToString();
-                    bd_ID_User_act = readact["ID_User"].ToString();
+                    while (readact.Read())
+                    {
+                        bd_ID_act = readact["ID"].ToString();
+                        bd_date_act = readact["Date"].ToString();
+                        bd_IDParty_act = readact["IDParty"].ToString();
+                        bd_sp_dost_act = readact["sposob_dost"].ToString();
+                        bd_num_dost_act = readact["num_dost"].ToString();
+                        bd_date_dost_act = readact["date_dost"].ToString();
+                        bd_ID_Customer = readact["ID_Customer"].ToString();
+                        bd_ID_Meters = readact["Meters"].ToString();
+                        bd_Solution_act = readact["Solution"].ToString();
+                        bd_ID_User_act = readact["ID_User"].ToString();
+                    }
                 }
             }
+            catch (Exception error) { MessageBox.Show(error.Message);}
+
             comm.Connection.Close();
 
             bookmark_date_act.Range.Text = bookmark_date_act2.Range.Text = bookmark_date_act3.Range.Text = bd_date_act.Substring(0, 10);
@@ -1833,53 +1518,71 @@ namespace Garant1._0
             bookmark_sp_pol_num_act.Range.Text = bd_num_dost_act;
             bookmark_sp_pol_date_act.Range.Text = bd_date_dost_act;
 
-            customer cust = JsonConvert.DeserializeObject<customer>(bd_ID_Customer_JSON);
+            MySqlDataReader customer = ExecutQuery_Select("SELECT * FROM customers WHERE " + bd_ID_Customer + " = ID");
+            try
+            {
+                while (customer.Read())
+                {
+                    bookmark_customer_act.Range.Text = customer["Descr"].ToString();
+                    bookmark_cust_index_act.Range.Text = customer["_Index"].ToString();
+                    bookmark_cust_resp_act.Range.Text = customer["Resp"].ToString();
+                    bookmark_cust_oblast_act.Range.Text = customer["Oblast"].ToString();
+                    bookmark_cust_city_act.Range.Text = customer["City"].ToString();
+                    bookmark_cust_street_act.Range.Text = customer["Street"].ToString();
+                    bookmark_cust_h_act.Range.Text = customer["Num_h"].ToString();
+                    bookmark_cust_flat_act.Range.Text = customer["Num_f"].ToString();
+                }
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); return; }
 
-            bookmark_customer_act.Range.Text = cust.Descr;
-            bookmark_cust_index_act.Range.Text = cust._Index;
-            bookmark_cust_resp_act.Range.Text = cust.Resp;
-            bookmark_cust_oblast_act.Range.Text = cust.Oblast;
-            bookmark_cust_city_act.Range.Text = cust.City;
-            bookmark_cust_street_act.Range.Text = cust.Street;
-            bookmark_cust_h_act.Range.Text = cust.Num_h;
-            bookmark_cust_flat_act.Range.Text = cust.Num_f;
+            comm.Connection.Close();
 
             if (bd_Solution_act == "Негарантия") bookmark_negarant_act.Range.Text = "V";
 
             MySqlDataReader readusr = ExecutQuery_Select("SELECT * FROM users WHERE ID = '" + bd_ID_User_act + "'");
 
-            if (readusr == null) return;
-            
             if (readusr.HasRows != false) {
                 while (readusr.Read())
                 {
-                    //bookmark_user_act.Range.Text = readusr["position"].ToString() + " " + readusr["Descr"].ToString();
                     bookmark_user_act.Range.Text = readusr["Descr"].ToString();
                 }
             }
             comm.Connection.Close();
 
             bookmark_solution_act.Range.Text = bd_Solution_act;
-            int all_prib_without_kit = 0;
-            int all_prib_with_kit = 0;
-            meter[] meters = JsonConvert.DeserializeObject<meter[]>(bd_ID_Schetciki_JSON);
-            int row = 2;
-            int column = 3;
-            for (int i = 0; i < meters.Length; i++)
+            int all_prib_without_kit = 0, all_prib_with_kit = 0, row = 2,column = 3;
+
+            meter[] meters = JsonConvert.DeserializeObject<meter[]>(bd_ID_Meters);
+
+            for (int index = 0; index < meters.Length; index++)
             {
                 int sum_all = 0;
                 int sum_kompl = 0;
-                string type_meter_cycle = meters[i].TypeMeter;
+                string type_meter_cycle = meters[index].TypeMeter;
+
+                if (index == meters.Length - 1)
+                {
+                    if (index < 10)
+                    {
+                        row = 10;
+                        column = 6;
+                    }
+                    docWord.Tables[2].Cell(row, column).Range.Text = "Всего:";
+                    docWord.Tables[2].Cell(row, column + 1).Range.Text = all_prib_without_kit.ToString();
+                    docWord.Tables[2].Cell(row, column + 2).Range.Text = all_prib_with_kit.ToString();
+                }
 
                 if (type_meter_cycle == "none") continue;
 
                 for (int a = 0; a < meters.Length; a++)
                 {
-                    if (meters[a].TypeMeter == type_meter_cycle) {
+                    if (meters[a].TypeMeter == type_meter_cycle)
+                    {
                         sum_all++;
                         all_prib_without_kit++;
 
-                        if (meters[a].kit.Trim() == "1") {
+                        if (meters[a].kit.Trim() == "1")
+                        {
                             sum_kompl++;
                             all_prib_with_kit++;
                         }
@@ -1895,55 +1598,34 @@ namespace Garant1._0
                 docWord.Tables[2].Cell(row, column + 2).Range.Text = sum_kompl.ToString();
                 row++;
 
-                if (row >= 10)  docWord.Tables[2].Rows.Add(ref missobj);
-                if (i == meters.Length - 1) {
-                    if (i < 10) {
-                        row = 10;
-                        column = 6;
-                    }
-                    docWord.Tables[2].Cell(row, column).Range.Text = "Всего:";
-                    docWord.Tables[2].Cell(row, column + 1).Range.Text = all_prib_without_kit.ToString();
-                    docWord.Tables[2].Cell(row, column + 2).Range.Text = all_prib_with_kit.ToString();
-                }
+                if (row >= 10) docWord.Tables[2].Rows.Add(ref missobj);
             }
+
+            comm.Connection.Close();
 
             Word.Bookmark[] bms = new Word.Bookmark[] { bookmark_ser_prib1_act, bookmark_ser_prib2_act, bookmark_ser_prib3_act, bookmark_ser_prib4_act, bookmark_ser_prib5_act };
 
-            if (all_prib_without_kit <= 5) {
+            if (all_prib_without_kit <= 5)
+            {
                 for (int i = 0; i < meters.Length; i++)
                 {
                     bms[i].Range.Text = meters[i].Ser_Num;
                 }
             }
-
-            //docWord.Tables[2].Cell(2, 3).Range.Text = "Test";
-
-            //Word.Bookmark bookmark_ser_prib1_act = docWord.Bookmarks[ref ser_prib1_act];
-            //Word.Bookmark bookmark_ser_prib2_act = docWord.Bookmarks[ref ser_prib2_act];
-            //Word.Bookmark bookmark_ser_prib3_act = docWord.Bookmarks[ref ser_prib3_act];
-            //Word.Bookmark bookmark_ser_prib4_act = docWord.Bookmarks[ref ser_prib4_act];
-            //Word.Bookmark bookmark_ser_prib5_act = docWord.Bookmarks[ref ser_prib5_act];
-
-            //Word.Bookmark bookmark_negarant_act = docWord.Bookmarks[ref negarant_act];
-            //Word.Bookmark bookmark_user_act = docWord.Bookmarks[ref user_act];
-            //Word.Bookmark bookmark_date_act3 = docWord.Bookmarks[ref date_act3];
-            //Word.Bookmark bookmark_solution_act = docWord.Bookmarks[ref solution_act];
         }
-
-        private void act_priem_num_PN_TextChanged(object sender, EventArgs e) { }
 
         private void act_priem_num_acta_Click(object sender, EventArgs e)
         {
-            act_priem_num_acta.Items.Clear();
-            if (act_priem_num_PN.Text.Trim() == "") return;
+            receiversActNumberTB.Items.Clear();
+            if (receiverPNactsTB.Text.Trim() == "") return;
 
-            MySqlDataReader find_acts = ExecutQuery_Select("SELECT * FROM acts WHERE IDParty = '" + act_priem_num_PN.Text + "'"); ;
+            MySqlDataReader find_acts = ExecutQuery_Select("SELECT * FROM acts WHERE IDParty = '" + receiverPNactsTB.Text + "'"); ;
             if (find_acts == null) return;
             if (find_acts.HasRows != false)
             {
                 while (find_acts.Read())
                 {
-                    act_priem_num_acta.Items.Add(find_acts["ID"]);
+                    receiversActNumberTB.Items.Add(find_acts["ID"]);
                 }
             }
             comm.Connection.Close();
@@ -1953,64 +1635,22 @@ namespace Garant1._0
         {
             try
             {
-                Show_Act(Convert.ToInt32(act_priem_num_acta.Text));
+                Show_Act(Convert.ToInt32(receiversActNumberTB.Text));
             }
             catch (Exception ex) { MessageBox.Show(ex.Message);}
         }
 
-        private void cb_coded_TextChanged(object sender, EventArgs e)
-        {
-            /*
-            if (cb_coded.Text.Trim() == "")
-            {
-                cb_coded.Items.AddRange(code_err_water);
-            }
-            else
-            {
-                foreach (string code_err in code_err_water)
-                {
-                    if (code_err.Trim() == cb_coded.Text.Trim())
-                    {
-                        cb_coded.Items.AddRange(code_err_water);
-                        return;
-                    }
-                }
-                //MessageBox.Show("Clear data = "+cb_coded.Text);
-                cb_coded.Items.Clear();
-                foreach (string code_err in code_err_water)
-                {
-                    if (code_err.IndexOf(cb_coded.Text) != -1)
-                    {
-                        cb_coded.Items.Add(code_err);
-                        cb_coded.DroppedDown = true;
-                        //cb_coded.Focus();
-                    }
-                }
-            }
-            cb_coded.SelectionStart = cb_coded.Text.Length;*/
-        }
-
         private void cb_coded_Click(object sender, EventArgs e)
         {
-            if (cb_coded.Text.Trim() == "") {
-                cb_coded.Items.Clear();
-                cb_coded.Items.AddRange(code_err_water);
+            if (defectCodeTB.Text.Trim() == "") {
+                defectCodeTB.Items.Clear();
+                defectCodeTB.Items.AddRange(code_err_water);
             }
         }
-
-        private void cb_coded_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ActiveControl = null;
-            //cb_coded.SelectionStart = 0;
-        }
-
-        private void cb_coded_SelectionChangeCommitted(object sender, EventArgs e) { }
-
-        private void label11_Click(object sender, EventArgs e) { }
 
         private void tb_CLA_num_act_TextChanged(object sender, EventArgs e)
         {
-            string num_act = tb_CLA_num_act.Text;
+            string num_act = controlListViewTB.Text;
             label30.Text = label32.Text = "";
             MySqlDataReader act = ExecutQuery_Select("SELECT * FROM acts WHERE ID = '" + num_act + "'");
 
@@ -2026,7 +1666,7 @@ namespace Garant1._0
 
         private void btn_find_CLA_Click(object sender, EventArgs e)
         {
-            string num_act = tb_CLA_num_act.Text;
+            string num_act = controlListViewTB.Text;
             MySqlDataReader reader1 = ExecutQuery_Select("SELECT * FROM acts WHERE ID = '" + num_act + "'");
 
             if (reader1 != null) {
@@ -2081,46 +1721,35 @@ namespace Garant1._0
             int row = 2;
             int kol_vo = 0;
 
-            string bd_schitciki_JSON = "";
-            string bd_customer_JSON = "";
+            string bd_schitciki_JSON = "", bd_customer_JSON = "", customerDescription = "";
 
-            MySqlDataReader act = ExecutQuery_Select("SELECT * FROM acts WHERE ID = '" + num_act + "'");
+            MySqlDataReader actRead = ExecutQuery_Select("SELECT * FROM acts WHERE ID = '" + num_act + "'");
 
-            if (act != null) {
-                while (act.Read()) {
-                    bd_schitciki_JSON = act["Schetciki"].ToString();
-                    bd_customer_JSON = act["ID_Customer"].ToString();
+            if (actRead != null) {
+                while (actRead.Read()) {
+                    bd_schitciki_JSON = actRead["Meters"].ToString();
+                    bd_customer_JSON = actRead["ID_Customer"].ToString();
                 }
             }
 
             comm.Connection.Close();
 
-            customer curCustomer = JsonConvert.DeserializeObject<customer>(bd_customer_JSON);
-            bookmark_ref_customer.Range.Text = curCustomer.Descr;
+            MySqlDataReader customerRead = ExecutQuery_Select("SELECT * FROM customers WHERE ID = '" + bd_customer_JSON + "'");
+
+            try
+            {
+                if (customerRead != null)
+                {
+                    while (customerRead.Read())
+                    {
+                        customerDescription = customerRead["Descr"].ToString();
+                    }
+                }
+            }
+            catch (Exception error) { MessageBox.Show(error.Message);}
+
+            bookmark_ref_customer.Range.Text = customerDescription;
             bookmark_ref_num.Range.Text = num_act;
-
-            //act_customer = "{" +
-            //    "\"ID\":" + "\"" + cust.ID + "\"," +
-            //    "\"Descr\":" + "\"" + cust.Descr + "\"," +
-            //    "\"ContFace\":" + "\"" + cust.ContFace + "\"," +
-            //    "\"Phone\":" + "\"" + cust.Phone + "\"," +
-            //    "\"_Index\":" + "\"" + cust._Index + "\"," +
-            //    "\"Resp\":" + "\"" + cust.Resp + "\"," +
-            //    "\"Oblast\":" + "\"" + cust.Oblast + "\"," +
-            //    "\"City\":" + "\"" + cust.City + "\"," +
-            //    "\"Street\":" + "\"" + cust.Street + "\"," +
-            //    "\"Num_h\":" + "\"" + cust.Num_h + "\"," +
-            //    "\"Num_f\":" + "\"" + cust.Num_f + "\"" +
-            //    "}";
-
-            //bd_schitciki_JSON = "[{'IDParty' : 11, 'Codeb' : 'error code', 'DatePriem' :  '2024-02-02 04:27:19' , " +
-            //    "'TypeMeter' : 'just an any type', 'narabotka' : 'just an any narabotka', 'Set_Num' : 34, " +
-            //    "'DateCreate' : '2024-02-02 04:27:19', 'CustomerID' : 44, 'Solution' : 'just an any solution', " +
-            //    "'Code_err_user' : 'just an any code error user', 'UserID' : 34, 'DateAnaliz' : '2024-02-02 04:27:19', " +
-            //    "'Descr' : 'just an any description', 'kit' : 'any kit', 'sposob_dost' : 'just an any delivery method', " +
-            //    "'num_dost' : 45, 'date_dost' : '2024-02-02 04:27:19'}]";
-            //[{ "IDParty" : 11, "Codeb" : "error code", "DatePriem" :  "2024-02-02 04:27:19" , "TypeMeter" : "just an any type", "narabotka" : "just an any narabotka", "Set_Num" : 34, "DateCreate" : "2024-02-02 04:27:19", "CustomerID" : 44, "Solution" : "just an any solution", "Code_err_user" : "just an any code error user", "UserID" : 34, "DateAnaliz" : "2024-02-02 04:27:19", "Descr" : "just an any description", "kit" : "any kit", "sposob_dost" : "just an any delivery method", "num_dost" : 45, "date_dost" : "2024-02-02 04:27:19"}]
-            //{"name" : "any name", "surname" : "any surname", "address" : "any address", "Descr" : 466, "ContFace" : "any contact face", "Phone" : "8-4342-455-75-69", "_Index" : 1, "Resp" : "Domina Res Publica est Roma", "Oblast" : "any state", "City" : "any city", "Street" : "and any street", "Num_h" : 34, "Num_f" : 55}
 
             meter[] meters = JsonConvert.DeserializeObject<meter[]>(bd_schitciki_JSON);
 
@@ -2145,32 +1774,27 @@ namespace Garant1._0
             bookmark_ref_kolvo.Range.Text = kol_vo.ToString();
         }
 
-        private void label24_Click(object sender, EventArgs e) { }
-
-        private void radioButton1_CheckedChanged(object sender, EventArgs e) { }
-
         private void btn_showCD_Click(object sender, EventArgs e)
         {
-            Chose_CD _CD = new Chose_CD(code_err_water, ref cb_coded);
+            Chose_CD _CD = new Chose_CD(code_err_water, ref defectCodeTB);
             _CD.ShowDialog();
         }
 
-        private void label23_Click(object sender, EventArgs e) { }
-
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            checkedListBox1.Items.Clear();
+            meterTypesList.Items.Clear();
 
             if (tabControl1.SelectedIndex == 1) {
 
-                MySqlDataReader reader1 = ExecutQuery_Select("SELECT * FROM `inwork` GROUP BY TypeMeter");
+                MySqlDataReader reader1 = ExecutQuery_Select("SELECT TypeMeter FROM `inwork` GROUP BY TypeMeter");
 
-                if (reader1 != null) {
-                    if (reader1.HasRows) {
+                if (reader1 != null)
+                {
+                    if (reader1.HasRows)
+                    {
                         while (reader1.Read())
                         {
-                            checkedListBox1.Items.Add(reader1["TypeMeter"].ToString());
-                            //MessageBox.Show("add + " + reader1["TypeMeter"].ToString());
+                            meterTypesList.Items.Add(reader1["TypeMeter"].ToString());
                         }
                     }
                 }
@@ -2180,48 +1804,26 @@ namespace Garant1._0
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox2.Checked == true) {
-                cb_kv_end.Enabled = cb_kv_start.Enabled = cb_kv_year_end.Enabled = cb_kv_year_start.Enabled = true;
-                textBox1.Enabled = textBox2.Enabled = monthCalendar2.Enabled = monthCalendar1.Enabled = false;
+            if (choseType4Excel.Checked == true) {
+                reportQuarterEnd.Enabled = reportQuarterStart.Enabled = reportYearEnd.Enabled = reportYearStart.Enabled = true;
+                dateFromTB.Enabled = dateToTB.Enabled = monthCalendarTo.Enabled = monthCalendarFrom.Enabled = false;
             } else {
-                cb_kv_end.Enabled = cb_kv_start.Enabled = cb_kv_year_end.Enabled = cb_kv_year_start.Enabled = false;
-                textBox1.Enabled = textBox2.Enabled = monthCalendar2.Enabled = monthCalendar1.Enabled = true;
+                reportQuarterEnd.Enabled = reportQuarterStart.Enabled = reportYearEnd.Enabled = reportYearStart.Enabled = false;
+                dateFromTB.Enabled = dateToTB.Enabled = monthCalendarTo.Enabled = monthCalendarFrom.Enabled = true;
             }
         }
 
         private void monthCalendar1_DateChanged(object sender, DateRangeEventArgs e)
         {
-            textBox1.Text = e.Start.ToString("yyyy-MM-dd");
-            monthCalendar2.MinDate = e.Start;
+            dateFromTB.Text = e.Start.ToString("yyyy-MM-dd");
+            monthCalendarTo.MinDate = e.Start;
         }
 
-        private void textBox1_Leave(object sender, EventArgs e)
-        {
-            //monthCalendar1.Visible = false;
-        }
+        private void monthCalendar2_DateChanged(object sender, DateRangeEventArgs e) { dateToTB.Text = e.Start.ToString("yyyy-MM-dd"); }
 
-        private void textBox1_Enter(object sender, EventArgs e)
-        {
-            // monthCalendar1.Visible = true;
-        }
-
-        private void textBox2_Enter(object sender, EventArgs e)
-        {
-            //monthCalendar2.Visible = true;
-        }
-
-        private void textBox2_Leave(object sender, EventArgs e)
-        {
-            //monthCalendar2.Visible = false;
-        }
-
-        private void monthCalendar2_DateChanged(object sender, DateRangeEventArgs e)
-        {
-            textBox2.Text = e.Start.ToString("yyyy-MM-dd");
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
+        private void Num_Party_SelectedIndexChanged(object sender, EventArgs e) { Refresh_DataGridView(); }
     }
+
     class act
     {
         public string ID { get; set; }
@@ -2231,7 +1833,7 @@ namespace Garant1._0
         public string num_dost { get; set; }
         public string date_dost { get; set; }
         public string ID_Customer { get; set; }
-        public string Schetciki { get; set; }
+        public string Meters { get; set; }
         public string Solution { get; set; }
         public string ID_User { get; set; }
     }
@@ -2258,6 +1860,9 @@ namespace Garant1._0
     class customer
     {
         public string ID { get; set; }
+        public string name { get; set; }
+        public string lastname { get; set; }
+        public string address{ get; set; }
         public string Descr { get; set; }
         public string ContFace { get; set; }
         public string Phone { get; set; }

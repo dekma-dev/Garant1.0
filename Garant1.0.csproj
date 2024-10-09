@@ -140,6 +140,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AuthWIndow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AuthWIndow.Designer.cs">
+      <DependentUpon>AuthWIndow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Chose_CD.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -154,6 +160,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="AuthWIndow.resx">
+      <DependentUpon>AuthWIndow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Chose_CD.resx">
       <DependentUpon>Chose_CD.cs</DependentUpon>
     </EmbeddedResource>

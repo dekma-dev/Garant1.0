@@ -91,3 +91,4 @@ C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Debug\K4o
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Debug\K4os.Hash.xxHash.dll
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Debug\System.IO.Pipelines.dll
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Debug\System.IO.Pipelines.xml
+C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\obj\Debug\Garant1._0.AuthWIndow.resources
