@@ -1,6 +1,4 @@
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Release\Garant1.0.exe.config
-C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Release\Garant1.0.exe.manifest
-C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Release\Garant1.0.application
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Release\Garant1.0.exe
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Release\Garant1.0.pdb
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Release\BouncyCastle.Crypto.dll
@@ -19,7 +17,6 @@ C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Release\S
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Release\System.ValueTuple.dll
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Release\Google.Protobuf.pdb
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Release\Google.Protobuf.xml
-C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Release\MySql.Data.xml
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Release\Renci.SshNet.xml
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Release\System.Buffers.xml
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Release\System.Memory.xml
@@ -35,10 +32,12 @@ C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\obj\Release\G
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\obj\Release\Garant1._0.Properties.Resources.resources
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\obj\Release\Garant1.0.csproj.GenerateResource.cache
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\obj\Release\Garant1.0.csproj.CoreCompileInputs.cache
-C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\obj\Release\Garant1.0.exe.manifest
-C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\obj\Release\Garant1.0.application
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\obj\Release\Garant1.0.csproj.CopyComplete
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\obj\Release\Garant1.0.exe
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\obj\Release\Garant1.0.pdb
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Release\Newtonsoft.Json.dll
 C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Release\Newtonsoft.Json.xml
+C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Release\System.IO.Pipelines.dll
+C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Release\System.IO.Pipelines.xml
+C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\obj\Release\Garant1._0.AuthWIndow.resources
+C:\Users\Дамир\source\repos\Garant1.01412\Garant1.0\Garant1.0\bin\Release\MySql.Data.xml

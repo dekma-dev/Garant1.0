@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 using Word = Microsoft.Office.Interop.Word;
 using Excel = Microsoft.Office.Interop.Excel;
-using System.Reflection;
 using Newtonsoft.Json;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
+using System.Globalization;
 
 namespace Garant1._0
 {
@@ -31,7 +26,9 @@ namespace Garant1._0
 
         public Form1(MySqlCommand comm)
         {
-            InitializeComponent();code_err_water = new string[] {
+            InitializeComponent();
+
+            code_err_water = new string[] {
                 "70 - Счетчик воды в сборе!",
                 "71 - не устанавливался",
                 "72 - нарушена пломба",
@@ -95,7 +92,9 @@ namespace Garant1._0
                 "242 - Счетчик простой (СМ-2, ПЧ-6)",
                 "243 - Счетчик антимагнитный (СМ-6, ПЧ-2)",
                 "244 - Счетчик простой (СМ-6, ПЧ-2)"
-            }; 
+            };
+
+            Array.Sort(code_err_water);
 
             StartPath = Application.StartupPath + "\\";
 
@@ -126,7 +125,7 @@ namespace Garant1._0
 
         void Find_users()
         {
-            MySqlDataReader reader = ExecutQuery_Select("SELECT * FROM users");
+            MySqlDataReader reader = ExecuteSQL("SELECT * FROM users");
             if (reader != null)
                 while (reader.Read())
                 {
@@ -136,16 +135,17 @@ namespace Garant1._0
         }
         
         //Решение ряда багов, связанных с типами данных MySQL версии > 8.0
+        //на проде можно попробовать убрать это, т.к. я снизил версию MySQL
         void SetSQLMode()
         {
-            MySqlDataReader query1 = ExecutQuery_Select("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
+            MySqlDataReader query1 = ExecuteSQL("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
             comm.Connection.Close();
                 
-            //MySqlDataReader query3 = ExecutQuery_Select("SELECT @@GLOBAL.sql_mode global, @@SESSION.sql_mode session;SET sql_mode = '';SET GLOBAL sql_mode = '';");
+            //MySqlDataReader query3 = ExecuteSQL("SELECT @@GLOBAL.sql_mode global, @@SESSION.sql_mode session;SET sql_mode = '';SET GLOBAL sql_mode = '';");
             //comm.Connection.Close();
         }
 
-        MySqlDataReader ExecutQuery_Select(String query)
+        MySqlDataReader ExecuteSQL(String query)
         {
             MySqlDataReader reader = null;
             try
@@ -186,7 +186,7 @@ namespace Garant1._0
         {
             if (choseUserComboBox.Text.Trim() != "") {
                 tabControl1.Enabled = true;
-                MySqlDataReader reader = ExecutQuery_Select("SELECT * FROM users WHERE Descr = '" + choseUserComboBox.Text + "'");
+                MySqlDataReader reader = ExecuteSQL("SELECT * FROM users WHERE Descr = '" + choseUserComboBox.Text + "'");
                 if (reader != null)
                     while (reader.Read())
                     {
@@ -203,7 +203,7 @@ namespace Garant1._0
             Refresh_DataGridView();
 
             chosePartysNumber.Items.Add("0 - Новая партия");
-            MySqlDataReader reader2 = ExecutQuery_Select("SELECT DISTINCT IDParty FROM inwork");
+            MySqlDataReader reader2 = ExecuteSQL("SELECT DISTINCT IDParty FROM inwork");
             if (reader2 == null) return;
             if (reader2.HasRows != false) {
 
@@ -226,7 +226,7 @@ namespace Garant1._0
             if (serial_num.Length == 8) {
 
                 await Task.Delay(10);
-                MySqlDataReader reader = ExecutQuery_Select("SELECT * FROM inwork WHERE Ser_Num = '" + serial_num + "'");
+                MySqlDataReader reader = ExecuteSQL("SELECT * FROM inwork WHERE Ser_Num = '" + serial_num + "'");
                 if (reader == null) return;
                 if (reader.HasRows != false) {
 
@@ -257,7 +257,7 @@ namespace Garant1._0
                     addMeterButton.Text = "Добавить новый";
                     comm.Connection.Close();
 
-                    reader = ExecutQuery_Select("SELECT * FROM temptable WHERE Ser_Num = '" + serial_num + "'");
+                    reader = ExecuteSQL("SELECT * FROM temptable WHERE Ser_Num = '" + serial_num + "'");
                     if (reader != null) {
 
                         while (reader.Read()) {
@@ -305,7 +305,7 @@ namespace Garant1._0
 
                 if (chosePartysNumber.Text == "0 - Новая партия") {
 
-                    MySqlDataReader reader = ExecutQuery_Select("SELECT MAX(IDParty) as IDParty FROM inwork");
+                    MySqlDataReader reader = ExecuteSQL("SELECT MAX(IDParty) as IDParty FROM inwork");
 
                     if (reader != null)
                         while (reader.Read())
@@ -474,7 +474,7 @@ namespace Garant1._0
             mainDataGridView.Rows.Clear();
 
             await Task.Delay(10);
-            MySqlDataReader reader = ExecutQuery_Select("SELECT * FROM `inwork` WHERE IDParty = '" + chosePartysNumber.Text + "'");
+            MySqlDataReader reader = ExecuteSQL("SELECT * FROM `inwork` WHERE IDParty = '" + chosePartysNumber.Text + "'");
             int i = 1;
 
             if (reader == null) return;
@@ -499,7 +499,7 @@ namespace Garant1._0
             choseCustomer.Items.Clear();
             await Task.Delay(10);
 
-            reader = ExecutQuery_Select("SELECT * FROM `customers`");
+            reader = ExecuteSQL("SELECT * FROM `customers`");
 
             if (reader.HasRows != false)
             {
@@ -525,9 +525,9 @@ namespace Garant1._0
         {
             if (defectCode4FindAct.Text.Trim() == "") return;
 
-            MySqlDataReader reader1 = ExecutQuery_Select("SELECT * FROM inwork WHERE IDParty = '" + defectCode4FindAct.Text + "'");
+            MySqlDataReader reader1 = ExecuteSQL("SELECT * FROM inwork WHERE IDParty = '" + defectCode4FindAct.Text + "'");
             if (reader1 != null)
-            {
+            {   
                 if (!reader1.HasRows)
                 {
                     MessageBox.Show("Приходная накладная не найдена.");
@@ -536,6 +536,7 @@ namespace Garant1._0
                 }
             }
             comm.Connection.Close();
+
             Word.Application appWord;
             Word.Document docWord = null;
             object missobj = System.Reflection.Missing.Value;
@@ -588,7 +589,7 @@ namespace Garant1._0
             bookmark_Date2.Range.Text = DateTime.Now.ToString("D");
 
             string USER_ID = "0";
-            MySqlDataReader reader = ExecutQuery_Select("SELECT CustomerID, UserID FROM inwork WHERE IDParty = '" + defectCode4FindAct.Text + "'");
+            MySqlDataReader reader = ExecuteSQL("SELECT CustomerID, UserID FROM inwork WHERE IDParty = '" + defectCode4FindAct.Text + "'");
             if (reader != null)
             {
                 while (reader.Read())
@@ -603,7 +604,7 @@ namespace Garant1._0
             comm.Connection.Close();
 
             //USERNAME
-            MySqlDataReader User = ExecutQuery_Select("SELECT Descr FROM users WHERE ID = '" + USER_ID + "'");
+            MySqlDataReader User = ExecuteSQL("SELECT Descr FROM users WHERE ID = '" + USER_ID + "'");
             if (User != null)
             {
                 while (User.Read())
@@ -629,7 +630,7 @@ namespace Garant1._0
             List<string> types_meter = new List<string>();
             List<string> reasons_meter = new List<string>();
 
-            MySqlDataReader type_data = ExecutQuery_Select("SELECT DISTINCT TypeMeter FROM inwork WHERE IDParty = '" + defectCode4FindAct.Text + "'");
+            MySqlDataReader type_data = ExecuteSQL("SELECT DISTINCT TypeMeter FROM inwork WHERE IDParty = '" + defectCode4FindAct.Text + "'");
             {
                 if (type_data != null)
                 {
@@ -644,7 +645,7 @@ namespace Garant1._0
             foreach (string type in types_meter)
             {
                 reasons_meter.Clear();
-                MySqlDataReader reason = ExecutQuery_Select("SELECT DISTINCT Solution FROM inwork WHERE IDParty = '" + defectCode4FindAct.Text + "' AND TypeMeter = '" + type + "'");
+                MySqlDataReader reason = ExecuteSQL("SELECT DISTINCT Solution FROM inwork WHERE IDParty = '" + defectCode4FindAct.Text + "' AND TypeMeter = '" + type + "'");
                 {
                     if (reason != null)
                     {
@@ -659,7 +660,7 @@ namespace Garant1._0
 
                 foreach (string solution in reasons_meter)
                 {
-                    MySqlDataReader withoutKit = ExecutQuery_Select("SELECT COUNT(*) as count FROM inwork WHERE IDParty = '" + defectCode4FindAct.Text + "' AND TypeMeter = '" + type + "' AND Solution = '" + solution + "'");
+                    MySqlDataReader withoutKit = ExecuteSQL("SELECT COUNT(*) as count FROM inwork WHERE IDParty = '" + defectCode4FindAct.Text + "' AND TypeMeter = '" + type + "' AND Solution = '" + solution + "'");
                     if (withoutKit != null)
                     {
                         while (withoutKit.Read())
@@ -685,7 +686,7 @@ namespace Garant1._0
                         }
                     }
                     comm.Connection.Close();
-                    MySqlDataReader withKit = ExecutQuery_Select("SELECT COUNT(*) as count FROM inwork WHERE IDParty = '" + defectCode4FindAct.Text + "' AND TypeMeter = '" + type + "' AND Solution = '" + solution + "' AND kit = '1'");
+                    MySqlDataReader withKit = ExecuteSQL("SELECT COUNT(*) as count FROM inwork WHERE IDParty = '" + defectCode4FindAct.Text + "' AND TypeMeter = '" + type + "' AND Solution = '" + solution + "' AND kit = '1'");
                     if (withKit != null)
                     {
                         while (withKit.Read())
@@ -715,7 +716,7 @@ namespace Garant1._0
             appWord.Visible = true;
 
 
-            MySqlDataReader acts = ExecutQuery_Select("SELECT COUNT(*) as count FROM acts WHERE IDParty = '" + defectCode4FindAct.Text + "'");
+            MySqlDataReader acts = ExecuteSQL("SELECT COUNT(*) as count FROM acts WHERE IDParty = '" + defectCode4FindAct.Text + "'");
 
             if (acts != null) {
                 while (acts.Read())
@@ -738,7 +739,7 @@ namespace Garant1._0
 
         void fill_cb()
         {
-            MySqlDataReader reader = ExecutQuery_Select("SELECT * FROM reasonreturn");
+            MySqlDataReader reader = ExecuteSQL("SELECT * FROM reasonreturn");
             if (reader != null)
             {
                 while (reader.Read())
@@ -755,7 +756,7 @@ namespace Garant1._0
         {
             agentsDataGridView.Rows.Clear();
 
-            MySqlDataReader reader = ExecutQuery_Select("SELECT * FROM `customers`");
+            MySqlDataReader reader = ExecuteSQL("SELECT * FROM `customers`");
 
             int i = 1;
 
@@ -777,7 +778,7 @@ namespace Garant1._0
             add_customer.Text = (cust_id.Text.Trim() == "") ? "Добавить нового" : "Обновить";
 
             if (cust_id.Text.Trim() != "") {
-                MySqlDataReader reader = ExecutQuery_Select("SELECT * FROM `customers` WHERE ID = '" + cust_id.Text.Trim() + "'");
+                MySqlDataReader reader = ExecuteSQL("SELECT * FROM `customers` WHERE ID = '" + cust_id.Text.Trim() + "'");
 
                 if (reader == null) return;
                 if (reader.HasRows != false) {
@@ -960,7 +961,10 @@ namespace Garant1._0
 
             string[] rimsk = new string[] { "0", "I", "II", "III", "IV" };
 
-            MySqlDataReader data = ExecutQuery_Select(query);
+            CultureInfo cultureInfo = new CultureInfo("ru");
+            DateTimeFormatInfo libraryDate = cultureInfo.DateTimeFormat;
+
+            MySqlDataReader data = ExecuteSQL(query);
 
             if (data != null)
             {
@@ -975,42 +979,46 @@ namespace Garant1._0
                 range.Merge(Type.Missing);
                 sheet.Cells[1, 1] = text_data;
 
-                int row = 3;
+                int row = 3, quarter = Convert.ToInt32(reportQuarterStart.Text);
 
-                int year = Convert.ToInt32(reportYearStart.Text);
-                int kv = Convert.ToInt32(reportQuarterStart.Text);
                 if (have_code_err == false)
                 {
+                    /*
+                     * Составление общего Excel-отчёта, то есть без выбора конкретных кодов ошибок
+                     * Выводит уникальные записи => одна запись в БД == +1 в отчёте
+                     */
+
+                    sheet.Cells[2, 1] = "ПЕРИОД";
+                    sheet.Cells[2, 2] = "ОБЩЕЕ КОЛ-ВО, ШТ";
+                    sheet.Cells[2, 3] = "КОЛ-ВО ПРИНЯТЫХ НА ГАРАНТИЙНЫЙ РЕМОНТ, ШТ";
+                    sheet.Cells[2, 4] = "КОЛ-ВО НЕ ПРИНЯТЫХ НА ГАРАНТИЙНЫЙ РЕМОНТ, ШТ";
+                    sheet.Cells[2, 5] = "ПРИНЯТЫЕ НА ГАРАНТИЙНЫЙ РЕМОНТ. ПРОЦЕНТ ОТ ВЫПУСКА";
+                    sheet.Cells[2, 6] = "НЕ ПРИНЯТЫЕ НА ГАРАНТИЙНЫЙ РЕМОНТ. ПРОЦЕНТ ОТ ВЫПУСКА";
+                    sheet.Cells[2, 7] = "ВСЕГО ВЫПУЩЕНО";
+
+                    sheet.Columns.AutoFit();
+                    sheet.Columns["A:A"].ColumnWidth = 14;
+
                     if (choseType4Excel.Checked == true)
                     {
-                        //по кварталам
-                        sheet.Cells[2, 1] = "ПЕРЕОД";
-                        sheet.Cells[2, 2] = "ОБЩЕЕ КОЛ-ВО, ШТ";
-                        sheet.Cells[2, 3] = "КОЛ-ВО ПРИНЯТЫХ НА ГАРАНТИЙНЫЙ РЕМОНТ, ШТ";
-                        sheet.Cells[2, 4] = "КОЛ-ВО НЕ ПРИНЯТЫХ НА ГАРАНТИЙНЫЙ РЕМОНТ, ШТ";
-                        sheet.Cells[2, 5] = "ПРИНЯТЫЕ НА ГАРАНТИЙНЫЙ РЕМОНТ. ПРОЦЕНТ ОТ ВЫПУСКА";
-                        sheet.Cells[2, 6] = "НЕ ПРИНЯТЫЕ НА ГАРАНТИЙНЫЙ РЕМОНТ. ПРОЦЕНТ ОТ ВЫПУСКА";
-                        sheet.Cells[2, 7] = "ВСЕГО ВЫПУЩЕНО";
+                        int dateFrom = Convert.ToInt32(reportYearStart.Text);
 
-                        sheet.Columns.AutoFit();
-                        sheet.Columns["A:A"].ColumnWidth = 14;
-
-                        while (year <= Convert.ToInt32(reportYearEnd.Text))
+                        while (dateFrom <= Convert.ToInt32(reportYearEnd.Text))
                         {
-                            sheet.Cells[row, 1] = rimsk[kv] + " кв. " + year + " г.";
+                            sheet.Cells[row, 1] = rimsk[quarter] + " кв. " + dateFrom + " г.";
                             row++;
-                            kv++;
-                            if (kv - 1 == Convert.ToInt32(reportQuarterEnd.Text) && year == Convert.ToInt32(reportYearEnd.Text))
-                                kv = 5;
-                            if (kv == 5)
+                            quarter++;
+                            if (quarter - 1 == Convert.ToInt32(reportQuarterEnd.Text) && dateFrom == Convert.ToInt32(reportYearEnd.Text))
+                                quarter = 5;
+                            if (quarter == 5)
                             {
-                                sheet.Cells[row, 1] = "Всего за " + year + " г.";
+                                sheet.Cells[row, 1] = "Всего за " + dateFrom + " г.";
                                 range = sheet.Range[sheet.Cells[row, 1], sheet.Cells[row, 6]];
                                 range.Font.Bold = true;
                                 range.Interior.Color = Color.Gray;
                                 row++;
-                                kv = 1;
-                                year++;
+                                quarter = 1;
+                                dateFrom++;
                             }
                         }
 
@@ -1063,19 +1071,18 @@ namespace Garant1._0
                             }
                         }
 
-
                         while (data.Read())
                         {
                             DateTime dt = DateTime.Parse(data["DatePriem"].ToString());
 
-                            kv = dt.Month < 4 ? 1 : dt.Month < 7 ? 2 : dt.Month < 10 ? 3 : 4;
+                            quarter = dt.Month < 4 ? 1 : dt.Month < 7 ? 2 : dt.Month < 10 ? 3 : 4;
 
                             for (int new_row = 3; new_row <= row; new_row++)
                             {
                                 range = sheet.Cells[new_row, 1] as Excel.Range;
                                 string data_row = range.Value2;
 
-                                if (new_row != row && data_row.IndexOf(dt.Year.ToString()) != -1 && data_row.IndexOf(rimsk[kv]) != -1)
+                                if (new_row != row && data_row.IndexOf(dt.Year.ToString()) != -1 && data_row.IndexOf(rimsk[quarter]) != -1)
                                 {
                                     int stolb = (data["Solution"].ToString().Trim() == "Гарантийный ремонт") ? 3 : 4;
 
@@ -1090,15 +1097,120 @@ namespace Garant1._0
                     }
                     else
                     {
-                        // создание шаблона по произвольной выборке даты
+                        /*
+                         * Имплементация по месяцам, для реализации по каждому дню в месяце придется создать список со всеми днями всех месяцев в году
+                         * либо найти библиотеку с реализацией этого велосипеда
+                         */
+                        string[] dateFrom = dateFromTB.Text.Split('-'), dateTo = dateToTB.Text.Split('-');
+
+                        int yearFrom = Convert.ToInt32(dateFrom[0]);
+                        int yearTo = Convert.ToInt32(dateTo[0]);
+                        int currentMonth = Convert.ToInt32(dateFrom[1]);
+
+                        while (yearFrom <= yearTo)
+                        {
+                            if (currentMonth <= 12) sheet.Cells[row, 1] = libraryDate.MonthNames[currentMonth - 1] + ", " + yearFrom + " г.";
+                            row++;
+                            currentMonth++;
+
+                            if (currentMonth == 13)
+                            {
+                                sheet.Cells[row, 1] = "Всего за " + yearFrom + " г.";
+                                range = sheet.Range[sheet.Cells[row, 1], sheet.Cells[row, 6]];
+                                range.Font.Bold = true;
+                                range.Interior.Color = Color.Gray;
+                                row++;
+                                currentMonth = 1;
+                                yearFrom++;
+                            }
+                        }
+
+                        int last_row = 3;
+
+                        for (int new_row = 3; new_row < row; new_row++)
+                        {
+                            for (int column = 2; column <= 6; column++)
+                            {
+                                if (column == 2)
+                                {
+                                    range = sheet.Cells[new_row, column] as Excel.Range;
+                                    range.Formula = string.Format("=C" + new_row + "+D" + new_row);
+                                }
+                                else
+                                    sheet.Cells[new_row, column] = 0;
+                            }
+
+                            range = sheet.Cells[new_row, 5] as Excel.Range;
+                            range.Formula = string.Format("=C" + new_row + "/G" + new_row);
+                            range = sheet.Cells[new_row, 6] as Excel.Range;
+                            range.Formula = string.Format("=D" + new_row + "/G" + new_row);
+                            range = sheet.Cells[new_row, 7] as Excel.Range;
+                            range.Formula = string.Format("=B" + new_row);
+
+                            range = sheet.Cells[new_row, 1] as Excel.Range;
+                            string data_row = range.Value2;
+
+                            if (data_row.IndexOf("Всего за") != -1)
+                            {
+                                range = sheet.Cells[new_row, 2] as Excel.Range;
+                                range.Formula = string.Format("=SUM(B" + last_row + ":B" + (new_row - 1));
+
+                                range = sheet.Cells[new_row, 3] as Excel.Range;
+                                range.Formula = string.Format("=SUM(C" + last_row + ":C" + (new_row - 1));
+
+                                range = sheet.Cells[new_row, 4] as Excel.Range;
+                                range.Formula = string.Format("=SUM(D" + last_row + ":D" + (new_row - 1));
+
+                                range = sheet.Cells[new_row, 5] as Excel.Range;
+                                range.Formula = string.Format("=C" + new_row + "/G" + new_row);
+
+                                range = sheet.Cells[new_row, 6] as Excel.Range;
+                                range.Formula = string.Format("=D" + new_row + "/G" + new_row);
+
+                                range = sheet.Cells[new_row, 7] as Excel.Range;
+                                range.Formula = string.Format("=SUM(G" + last_row + ":G" + (new_row - 1));
+
+                                last_row = new_row + 1;
+                            }
+                        }
+
+                        while (data.Read())
+                        {
+                            DateTime dt = DateTime.Parse(data["DatePriem"].ToString());
+
+                            string findMonth = libraryDate.MonthNames[dt.Month - 1];
+
+                            for (int new_row = 3; new_row <= row; new_row++)
+                            {
+                                range = sheet.Cells[new_row, 1] as Excel.Range;
+                                string data_row = range.Value2;
+
+                                if (new_row != row && data_row.IndexOf(dt.Year.ToString()) != -1 && data_row.IndexOf(findMonth) != -1)
+                                {
+                                    int stolb = (data["Solution"].ToString().Trim() == "Гарантийный ремонт") ? 3 : 4;
+
+                                    range = sheet.Cells[new_row, stolb] as Excel.Range;
+                                    double a = range.Value2;
+                                    a += 1;
+                                    sheet.Cells[new_row, stolb] = a;
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
                 else
                 {
                     /*
+                     * Составление Excel-отчёта с выбором кодов ошибок и кварталов периода
+                     * 
                      * Данный шаблон учитывает в расчётах неуникальные записи,
                      * то есть один счётчик может числиться сразу в ряде строк,
-                     * поскольку каждый счётчик может иметь более одного кода ошибки/возврата.
+                     * поскольку каждый счётчик может иметь более одного кода ошибки/возврата
+                     * 
+                     * Aererium. Consentio. Hoc offero, a te considerando. No ta vicici gravius - civis Romanus sum.
+                     * Te saluto, Augusto sum imperator et pontifex maximus romae. Si tu es Roma amicus, es gratus.
+                     * Tam fortis, tamen...tam stupidus. Utinam hebeas cerebrum similia tuae fortitudini.
                      */
 
                     if (choseType4Excel.Checked == true)
@@ -1118,34 +1230,37 @@ namespace Garant1._0
                         range.Merge();
                         sheet.Cells[2, 3] = "Процент к общему количеству приборов";
 
-                        int start_year = Convert.ToInt32(reportYearStart.Text);
-                        int end_year = Convert.ToInt32(reportYearEnd.Text);
+                        int yearFrom = Convert.ToInt32(reportYearStart.Text);
+                        int yearTo = Convert.ToInt32(reportYearEnd.Text);
+                        int tableLength = Int32.Parse(reportQuarterEnd.Text);
 
-                        for (int i = start_year; i <= end_year; i++)
+                        for (int i = yearFrom; i <= yearTo; i++)
                         {
-                            if (i != DateTime.Now.Year)
+                            if (i != yearTo)
                             {
-                                range = sheet.Range[sheet.Cells[3, 3 + i - start_year], sheet.Cells[4, 3 + i - start_year]];
+                                range = sheet.Range[sheet.Cells[3, 3 + i - yearFrom], sheet.Cells[4, 3 + i - yearFrom]];
                                 range.Merge();
-                                sheet.Cells[3, 3 + i - start_year] = i + " г.";
+                                sheet.Cells[3, 3 + i - yearFrom] = i + " г.";
                             }
                             else
                             {
-                                range = sheet.Range[sheet.Cells[3, 3 + i - start_year], sheet.Cells[3, 3 + i - start_year + 4]];
+                                range = sheet.Range[sheet.Cells[3, 3 + i - yearFrom], sheet.Cells[3, 3 + i - yearFrom + tableLength]];
                                 range.Merge();
-                                sheet.Cells[3, 3 + i - start_year] = i + " г.";
-                                sheet.Cells[4, 3 + i - start_year + 0] = "I кв.";
-                                sheet.Cells[4, 3 + i - start_year + 1] = "II кв.";
-                                sheet.Cells[4, 3 + i - start_year + 2] = "III кв.";
-                                sheet.Cells[4, 3 + i - start_year + 3] = "IV кв.";
-                                sheet.Cells[4, 3 + i - start_year + 4] = "Всего";
+                                sheet.Cells[3, 3 + i - yearFrom] = i + " г.";
 
-                                sheet.Cells[4, 3 + i - start_year + 4].Interior.Color =  Color.Gray;
-                                sheet.Cells[4, 3 + i - start_year + 4].Font.Bold = true;
-                                sheet.Cells[4, 3 + i - start_year + 4].Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
-                                sheet.Cells[4, 3 + i - start_year + 4].Borders.Color = ColorTranslator.ToOle(Color.Black);
+                                for (int index = 1; index <= tableLength; index++)
+                                {
+                                    sheet.Cells[4, 3 + i - yearFrom + index - 1] = rimsk[index] + " кв.";
+                                }
 
-                                last_column = 3 + i - start_year + 4;
+                                sheet.Cells[4, 3 + i - yearFrom + tableLength] = "Всего";
+
+                                sheet.Cells[4, 3 + i - yearFrom + tableLength].Interior.Color = Color.Gray;
+                                sheet.Cells[4, 3 + i - yearFrom + tableLength].Font.Bold = true;
+                                sheet.Cells[4, 3 + i - yearFrom + tableLength].Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+                                sheet.Cells[4, 3 + i - yearFrom + tableLength].Borders.Color = ColorTranslator.ToOle(Color.Black);
+
+                                last_column = 3 + i - yearFrom + tableLength;
                             }
                         }
 
@@ -1160,38 +1275,44 @@ namespace Garant1._0
 
                                 if (col == last_column)
                                 {
-                                    range = sheet.Cells[row, 11] as Excel.Range;
-                                    range.Formula = string.Format("=SUM(C" + row + ":J" + (row - 1));
+                                    range = sheet.Cells[row, col - 1] as Excel.Range;
+                                    string pickLastColumn = range.Address.Substring(1, 1);
+
+                                    range = sheet.Cells[row, col] as Excel.Range;
+                                    range.Formula = string.Format("=SUM(C" + row + ":" + pickLastColumn + row);
 
                                     sheet.Cells[row, col].Interior.Color = Color.Gray;
                                     sheet.Cells[row, col].Font.Bold = true;
                                     sheet.Cells[row, col].Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
                                     sheet.Cells[row, col].Borders.Color = ColorTranslator.ToOle(Color.Black);
                                 }
-                                }
+                            }
                         }
                         range = sheet.Cells[1, 2] as Excel.Range;
                         range.EntireColumn.AutoFit();
 
-                        while (data.Read()) {
+                        while (data.Read())
+                        {
+                            DateTime date = DateTime.Parse(data["DatePriem"].ToString());
 
-                            DateTime dt = DateTime.Parse(data["DatePriem"].ToString());
+                            //стартовый квартал
+                            quarter = date.Month < 4 ? 1 : date.Month < 7 ? 2 : date.Month < 10 ? 3 : 4;
 
-                            kv = dt.Month < 4 ? 1 : dt.Month < 7 ? 2 : dt.Month < 10 ? 3 : 4;
+                            if (date.Year == Int32.Parse(reportYearStart.Text) && quarter < Int32.Parse(reportQuarterStart.Text)) continue;
 
-                            for (int new_row = 5; new_row <= row; new_row++) {
-
+                            for (int new_row = 5; new_row <= row; new_row++)
+                            {
                                 var dataCodeB = (sheet.Cells[new_row, 2] as Excel.Range)?.Value2?.ToString() ?? "";
 
-                                if (new_row != row && data["Codeb"].ToString().IndexOf(dataCodeB) != -1) {
+                                if (new_row != row && data["Codeb"].ToString().IndexOf(dataCodeB) != -1)
+                                {
+                                    int startedYear = yearFrom;
 
-                                    for (int index = 0, column = 3; start_year <= end_year; start_year++, index++) {
-
-                                        if (dt.Year == start_year) {
-
-                                            column += index;
-
-                                            if (dt.Year == end_year) column = dt.Month < 4 ? 7: dt.Month < 7 ? 8 : dt.Month < 10 ? 9 : 10;
+                                    for (int index = 0, column = 3; startedYear <= yearTo; startedYear++, index++)
+                                    {
+                                        if (startedYear == date.Year && startedYear == yearTo)
+                                        {
+                                            column += index + quarter - 1;
 
                                             range = sheet.Cells[new_row, column] as Excel.Range;
                                             double a = range.Value2;
@@ -1200,13 +1321,146 @@ namespace Garant1._0
 
                                             break;
                                         }
+                                        else if (startedYear == date.Year && startedYear != yearTo)
+                                        {
+                                            column += index;
+                                            range = sheet.Cells[new_row, column] as Excel.Range;
+                                            double a = range.Value2;
+                                            a += 1;
+                                            sheet.Cells[new_row, column] = a;
+
+                                            break;
+                                        }
                                     }
-                                    break;
                                 }
                             }
                         }
                     }
-                    else { }
+                    else
+                    {
+                        /*
+                         * Составление Excel-отчета по выбранным ошибкам и произвольной гибкой
+                         */
+
+                        int years = Convert.ToInt32(reportYearEnd.Text) - Convert.ToInt32(reportYearStart.Text);
+                        int last_column = 0;
+                        range = sheet.Range[sheet.Cells[2, 1], sheet.Cells[4, 1]];
+                        range.Merge();
+                        sheet.Cells[2, 1] = "№ п/п";
+
+                        range = sheet.Range[sheet.Cells[2, 2], sheet.Cells[4, 2]];
+                        range.Merge();
+                        sheet.Cells[2, 2] = "Дефект";
+
+
+                        range = sheet.Range[sheet.Cells[2, 3], sheet.Cells[2, 3 + years + 4]];
+                        range.Merge();
+                        sheet.Cells[2, 3] = "Процент к общему количеству приборов";
+
+                        int yearFrom = Convert.ToInt32(dateFromTB.Text.Split('-')[0]);
+                        int yearTo = Convert.ToInt32(dateToTB.Text.Split('-')[0]);
+
+                        for (int i = yearFrom; i <= yearTo; i++)
+                        {
+                            if (i != yearTo)
+                            {
+                                range = sheet.Range[sheet.Cells[3, 3 + i - yearFrom], sheet.Cells[4, 3 + i - yearFrom]];
+                                range.Merge();
+                                sheet.Cells[3, 3 + i - yearFrom] = i + " г.";
+                            }
+                            else
+                            {
+                                range = sheet.Range[sheet.Cells[3, 3 + i - yearFrom], sheet.Cells[3, 3 + i - yearFrom + 12]];
+                                range.Merge();
+                                sheet.Cells[3, 3 + i - yearFrom] = i + " г.";
+                                for (int index = 0; index < 12; index ++)
+                                {
+                                    sheet.Cells[4, 3 + i - yearFrom + index] = libraryDate.MonthNames[index];
+                                }
+                                sheet.Cells[4, 3 + i - yearFrom + 12] = "Всего";
+
+                                sheet.Cells[4, 3 + i - yearFrom + 12].Interior.Color = Color.Gray;
+                                sheet.Cells[4, 3 + i - yearFrom + 12].Font.Bold = true;
+                                sheet.Cells[4, 3 + i - yearFrom + 12].Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+                                sheet.Cells[4, 3 + i - yearFrom + 12].Borders.Color = ColorTranslator.ToOle(Color.Black);
+
+                                last_column = 3 + i - yearFrom + 12;
+                            }
+                        }
+
+                        for (row = 5; row < error_index + 5; row++)
+                        {
+                            sheet.Cells[row, 1] = row - 4;
+                            sheet.Cells[row, 2] = errors[row - 5];
+
+                            for (int col = 3; col <= last_column; col++)
+                            {
+                                sheet.Cells[row, col] = 0;
+
+                                if (col == last_column)
+                                {
+                                    range = sheet.Cells[row, col - 1] as Excel.Range;
+                                    string pickLastColumn = range.Address.Substring(1, 1);
+
+                                    range = sheet.Cells[row, col] as Excel.Range;
+                                    range.Formula = string.Format("=SUM(C" + row + ":" + pickLastColumn + row);
+
+                                    sheet.Cells[row, col].Interior.Color = Color.Gray;
+                                    sheet.Cells[row, col].Font.Bold = true;
+                                    sheet.Cells[row, col].Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+                                    sheet.Cells[row, col].Borders.Color = ColorTranslator.ToOle(Color.Black);
+                                }
+                            }
+                        }
+                        range = sheet.Cells[1, 2] as Excel.Range;
+                        range.EntireColumn.AutoFit();
+
+                        while (data.Read())
+                        {
+                            DateTime date = DateTime.Parse(data["DatePriem"].ToString());
+
+                            if (date.Year == Int32.Parse(dateFromTB.Text.Split('-')[0]) && date.Month < Int32.Parse(dateFromTB.Text.Split('-')[1])) continue;
+
+                            string findMonth = libraryDate.MonthNames[date.Month - 1];
+
+                            for (int new_row = 5; new_row <= row; new_row++)
+                            {
+                                var dataCodeB = (sheet.Cells[new_row, 2] as Excel.Range)?.Value2?.ToString() ?? "";
+
+                                if (new_row != row && data["Codeb"].ToString().IndexOf(dataCodeB) != -1)
+                                {
+                                    int startedYear = yearFrom;
+                                    for (int index = 0, column = 3; startedYear <= yearTo; startedYear++, index++)
+                                    {
+                                        if (startedYear == date.Year && startedYear == yearTo)
+                                        {
+                                            for (int month = 0; month < 12; month++)
+                                            {
+                                                var columnDate = (sheet.Cells[4, column + index + month] as Excel.Range)?.Value2?.ToString() ?? "";
+                                                if (columnDate.IndexOf(findMonth) != -1) { column += index + month; }
+                                            }
+                                            
+                                            range = sheet.Cells[new_row, column] as Excel.Range;
+                                            double a = range.Value2;
+                                            a += 1;
+                                            sheet.Cells[new_row, column] = a;
+
+                                            break;
+                                        } 
+                                        else if (startedYear == date.Year && startedYear != yearTo) {
+                                            column += index;
+                                            range = sheet.Cells[new_row, column] as Excel.Range;
+                                            double a = range.Value2;
+                                            a += 1;
+                                            sheet.Cells[new_row, column] = a;
+
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
             comm.Connection.Close();
@@ -1219,7 +1473,7 @@ namespace Garant1._0
 
         void Form_acts(string act_IDParty)
         {
-            MySqlDataReader max_id = ExecutQuery_Select("SELECT MAX(ID) as Max_ID FROM acts");
+            MySqlDataReader max_id = ExecuteSQL("SELECT MAX(ID) as Max_ID FROM acts");
 
             int act_ID = 0;
             string act_Date = "", act_sposob_dost = "", act_num_dost = null, act_date_dost = null, customerid = "";
@@ -1235,8 +1489,8 @@ namespace Garant1._0
             act_ID++;
             comm.Connection.Close();
 
-            MySqlDataReader find_date = ExecutQuery_Select("SELECT * FROM inwork WHERE IDParty='" + act_IDParty + "' ORDER BY DatePriem DESC");
-            MySqlDataReader selectedIdCustomer = ExecutQuery_Select("SELECT * FROM inwork WHERE IDParty='" + act_IDParty + "' ORDER BY DatePriem DESC");
+            MySqlDataReader find_date = ExecuteSQL("SELECT * FROM inwork WHERE IDParty='" + act_IDParty + "' ORDER BY DatePriem DESC");
+            MySqlDataReader selectedIdCustomer = ExecuteSQL("SELECT * FROM inwork WHERE IDParty='" + act_IDParty + "' ORDER BY DatePriem DESC");
 
             if (find_date != null)
             {
@@ -1265,7 +1519,7 @@ namespace Garant1._0
                 "(TypeMeter LIKE '%РД%')" 
             };
 
-            MySqlDataReader find_reasons = ExecutQuery_Select("SELECT * FROM reasonreturn");
+            MySqlDataReader find_reasons = ExecuteSQL("SELECT * FROM reasonreturn");
 
             if (find_reasons != null) {
                 while (find_reasons.Read()) {
@@ -1291,7 +1545,7 @@ namespace Garant1._0
 
                     meters.Clear();
 
-                    MySqlDataReader find_meter = ExecutQuery_Select("SELECT * FROM inwork WHERE IDParty='" + act_IDParty + "' AND " + type_meter + " AND Solution = '" + reason + "'");
+                    MySqlDataReader find_meter = ExecuteSQL("SELECT * FROM inwork WHERE IDParty='" + act_IDParty + "' AND " + type_meter + " AND Solution = '" + reason + "'");
 
                     if (find_meter != null) {
                         while (find_meter.Read()) {
@@ -1372,7 +1626,7 @@ namespace Garant1._0
         void Show_All_Acts(int IDParty)
         {
             List<int> id_acts_int = new List<int>();
-            MySqlDataReader id_acts = ExecutQuery_Select("SELECT * FROM acts WHERE IDParty = '" + IDParty + "'");
+            MySqlDataReader id_acts = ExecuteSQL("SELECT * FROM acts WHERE IDParty = '" + IDParty + "'");
 
             if (id_acts != null) {
                 while (id_acts.Read())
@@ -1390,7 +1644,7 @@ namespace Garant1._0
         }
         void Show_Act(int ID_Act)
         {
-            MySqlDataReader reader1 = ExecutQuery_Select("SELECT * FROM acts WHERE ID = '" + ID_Act + "'");
+            MySqlDataReader reader1 = ExecuteSQL("SELECT * FROM acts WHERE ID = '" + ID_Act + "'");
 
             if (reader1 != null) {
                 if (!reader1.HasRows) {
@@ -1484,7 +1738,7 @@ namespace Garant1._0
             string bd_ID_Customer = "", bd_Solution_act = "", bd_ID_User_act = "", bd_ID_Meters = "";
             string[] metersID = new string[] { };
 
-            MySqlDataReader readact = ExecutQuery_Select("SELECT * FROM acts WHERE ID = '" + ID_Act + "'");
+            MySqlDataReader readact = ExecuteSQL("SELECT * FROM acts WHERE ID = '" + ID_Act + "'");
 
             if (readact == null) return;
 
@@ -1518,7 +1772,7 @@ namespace Garant1._0
             bookmark_sp_pol_num_act.Range.Text = bd_num_dost_act;
             bookmark_sp_pol_date_act.Range.Text = bd_date_dost_act;
 
-            MySqlDataReader customer = ExecutQuery_Select("SELECT * FROM customers WHERE " + bd_ID_Customer + " = ID");
+            MySqlDataReader customer = ExecuteSQL("SELECT * FROM customers WHERE " + bd_ID_Customer + " = ID");
             try
             {
                 while (customer.Read())
@@ -1539,7 +1793,7 @@ namespace Garant1._0
 
             if (bd_Solution_act == "Негарантия") bookmark_negarant_act.Range.Text = "V";
 
-            MySqlDataReader readusr = ExecutQuery_Select("SELECT * FROM users WHERE ID = '" + bd_ID_User_act + "'");
+            MySqlDataReader readusr = ExecuteSQL("SELECT * FROM users WHERE ID = '" + bd_ID_User_act + "'");
 
             if (readusr.HasRows != false) {
                 while (readusr.Read())
@@ -1619,7 +1873,7 @@ namespace Garant1._0
             receiversActNumberTB.Items.Clear();
             if (receiverPNactsTB.Text.Trim() == "") return;
 
-            MySqlDataReader find_acts = ExecutQuery_Select("SELECT * FROM acts WHERE IDParty = '" + receiverPNactsTB.Text + "'"); ;
+            MySqlDataReader find_acts = ExecuteSQL("SELECT * FROM acts WHERE IDParty = '" + receiverPNactsTB.Text + "'"); ;
             if (find_acts == null) return;
             if (find_acts.HasRows != false)
             {
@@ -1652,7 +1906,7 @@ namespace Garant1._0
         {
             string num_act = controlListViewTB.Text;
             label30.Text = label32.Text = "";
-            MySqlDataReader act = ExecutQuery_Select("SELECT * FROM acts WHERE ID = '" + num_act + "'");
+            MySqlDataReader act = ExecuteSQL("SELECT * FROM acts WHERE ID = '" + num_act + "'");
 
             if (act != null) {
                 while (act.Read())
@@ -1667,7 +1921,7 @@ namespace Garant1._0
         private void btn_find_CLA_Click(object sender, EventArgs e)
         {
             string num_act = controlListViewTB.Text;
-            MySqlDataReader reader1 = ExecutQuery_Select("SELECT * FROM acts WHERE ID = '" + num_act + "'");
+            MySqlDataReader reader1 = ExecuteSQL("SELECT * FROM acts WHERE ID = '" + num_act + "'");
 
             if (reader1 != null) {
                 if (!reader1.HasRows) {
@@ -1723,7 +1977,7 @@ namespace Garant1._0
 
             string bd_schitciki_JSON = "", bd_customer_JSON = "", customerDescription = "";
 
-            MySqlDataReader actRead = ExecutQuery_Select("SELECT * FROM acts WHERE ID = '" + num_act + "'");
+            MySqlDataReader actRead = ExecuteSQL("SELECT * FROM acts WHERE ID = '" + num_act + "'");
 
             if (actRead != null) {
                 while (actRead.Read()) {
@@ -1734,7 +1988,7 @@ namespace Garant1._0
 
             comm.Connection.Close();
 
-            MySqlDataReader customerRead = ExecutQuery_Select("SELECT * FROM customers WHERE ID = '" + bd_customer_JSON + "'");
+            MySqlDataReader customerRead = ExecuteSQL("SELECT * FROM customers WHERE ID = '" + bd_customer_JSON + "'");
 
             try
             {
@@ -1786,7 +2040,7 @@ namespace Garant1._0
 
             if (tabControl1.SelectedIndex == 1) {
 
-                MySqlDataReader reader1 = ExecutQuery_Select("SELECT TypeMeter FROM `inwork` GROUP BY TypeMeter");
+                MySqlDataReader reader1 = ExecuteSQL("SELECT TypeMeter FROM `inwork` GROUP BY TypeMeter");
 
                 if (reader1 != null)
                 {
