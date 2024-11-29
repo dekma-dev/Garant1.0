@@ -9,6 +9,9 @@ using Word = Microsoft.Office.Interop.Word;
 using Excel = Microsoft.Office.Interop.Excel;
 using Newtonsoft.Json;
 using System.Globalization;
+using Org.BouncyCastle.Utilities.Collections;
+using System.Threading;
+using System.Runtime.Remoting.Channels;
 
 namespace Garant1._0
 {
@@ -24,7 +27,7 @@ namespace Garant1._0
 
         string[] code_err_water;
 
-        public Form1(MySqlCommand comm)
+        public Form1(ref MySqlCommand comm)
         {
             InitializeComponent();
 
@@ -99,9 +102,8 @@ namespace Garant1._0
             StartPath = Application.StartupPath + "\\";
 
             this.comm = comm;
-
             SetSQLMode();
-            Find_users();
+            Find_users(); 
 
             defectCodesList.Items.Clear();
             foreach (string code in code_err_water)
@@ -140,9 +142,22 @@ namespace Garant1._0
         {
             MySqlDataReader query1 = ExecuteSQL("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
             comm.Connection.Close();
-                
-            //MySqlDataReader query3 = ExecuteSQL("SELECT @@GLOBAL.sql_mode global, @@SESSION.sql_mode session;SET sql_mode = '';SET GLOBAL sql_mode = '';");
-            //comm.Connection.Close();
+
+            MySqlDataReader query2 = ExecuteSQL("SELECT COUNT(*) as count FROM users;");
+
+            if (query2 != null)
+            {
+                while (query2.Read())
+                {
+                    if (query2["count"].ToString() == "0")
+                    {
+                        comm.Connection.Close();
+                        ExecuteSQL("INSERT INTO users (ID, name, surname, address, Descr) VALUES (NULL, 'username', 'userlastname', 'useraddress', 'userdescription');");
+                    }
+                    comm.Connection.Close();
+                    return;
+                }
+            }
         }
 
         MySqlDataReader ExecuteSQL(String query)
@@ -523,6 +538,7 @@ namespace Garant1._0
 
         private void Create_Priz_Nak_Click(object sender, EventArgs e)
         {
+            sender = new object();
             if (defectCode4FindAct.Text.Trim() == "") return;
 
             MySqlDataReader reader1 = ExecuteSQL("SELECT * FROM inwork WHERE IDParty = '" + defectCode4FindAct.Text + "'");
@@ -537,20 +553,25 @@ namespace Garant1._0
             }
             comm.Connection.Close();
 
-            Word.Application appWord;
-            Word.Document docWord = null;
+            Word.Application appWord = new Word.Application();
+            Word.Document docWord = new Word.Document();
             object missobj = System.Reflection.Missing.Value;
-            object falseobj = false;
-            object trueobj = true;
+            object falseobj = new object();
+            object trueobj = new object();
 
-            appWord = new Word.Application();
+            falseobj = false; trueobj = true;
+
+            //appWord = new Word.Application();
             object path_sh = StartPath + "Shablon_Prih_Nak.docx";
             try
             {
                 docWord = appWord.Documents.Add(ref path_sh, ref missobj, ref missobj, ref missobj);
             }
+            //тут и проблемка, не видит шаблон
+            //переместить шаблон в папку ../Release
             catch (Exception err)
             {
+                MessageBox.Show(path_sh.ToString());
                 docWord.Close(ref falseobj, ref missobj, ref missobj);
                 appWord.Quit(ref missobj, ref missobj, ref missobj);
                 docWord = null;

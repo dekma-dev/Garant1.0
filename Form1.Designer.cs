@@ -210,7 +210,7 @@
             this.tabControl1.Margin = new System.Windows.Forms.Padding(4);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1712, 872);
+            this.tabControl1.Size = new System.Drawing.Size(1712, 940);
             this.tabControl1.TabIndex = 1;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
@@ -222,7 +222,7 @@
             this.tabPage1.Margin = new System.Windows.Forms.Padding(4);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPage1.Size = new System.Drawing.Size(1704, 839);
+            this.tabPage1.Size = new System.Drawing.Size(1704, 907);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Добавить";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -234,7 +234,7 @@
             this.panel4.Location = new System.Drawing.Point(620, 4);
             this.panel4.Margin = new System.Windows.Forms.Padding(4);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1080, 831);
+            this.panel4.Size = new System.Drawing.Size(1080, 899);
             this.panel4.TabIndex = 2;
             // 
             // mainDataGridView
@@ -250,7 +250,7 @@
             this.mainDataGridView.ReadOnly = true;
             this.mainDataGridView.RowHeadersVisible = false;
             this.mainDataGridView.RowHeadersWidth = 10;
-            this.mainDataGridView.Size = new System.Drawing.Size(1080, 831);
+            this.mainDataGridView.Size = new System.Drawing.Size(1080, 899);
             this.mainDataGridView.TabIndex = 0;
             this.mainDataGridView.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_RowEnter);
             // 
@@ -294,7 +294,7 @@
             this.panel3.Location = new System.Drawing.Point(4, 4);
             this.panel3.Margin = new System.Windows.Forms.Padding(4);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(616, 831);
+            this.panel3.Size = new System.Drawing.Size(616, 899);
             this.panel3.TabIndex = 1;
             // 
             // defectCodeTB
@@ -669,7 +669,7 @@
             // 
             this.addMeterButton.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.addMeterButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.addMeterButton.Location = new System.Drawing.Point(0, 791);
+            this.addMeterButton.Location = new System.Drawing.Point(0, 859);
             this.addMeterButton.Margin = new System.Windows.Forms.Padding(4);
             this.addMeterButton.Name = "addMeterButton";
             this.addMeterButton.Size = new System.Drawing.Size(616, 40);
@@ -687,7 +687,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 29);
             this.tabPage3.Margin = new System.Windows.Forms.Padding(4);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(1704, 839);
+            this.tabPage3.Size = new System.Drawing.Size(1704, 907);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Отчет";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -1710,7 +1710,7 @@
             this.panel2.Location = new System.Drawing.Point(0, 58);
             this.panel2.Margin = new System.Windows.Forms.Padding(4);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1712, 872);
+            this.panel2.Size = new System.Drawing.Size(1712, 940);
             this.panel2.TabIndex = 3;
             // 
             // Form1
